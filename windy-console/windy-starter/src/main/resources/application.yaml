@@ -72,5 +72,5 @@ windy:
   console:
     version: @project.version@
   token:
-    expire: 3600
+    expire: 86400
     secret: tuyqteutwuytsd72368qewtquy

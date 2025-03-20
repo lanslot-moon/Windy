@@ -12,10 +12,25 @@
     <artifactId>windy-metrics</artifactId>
 
     <dependencies>
+        <!-- 内部依赖开始-->
+        <dependency>
+            <groupId>com.zj</groupId>
+            <artifactId>windy-domain</artifactId>
+        </dependency>
+        <!--内部依赖结束-->
+
+        <!--外部依赖开始-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!--外部依赖结束-->
+
     </dependencies>
 
 </project>

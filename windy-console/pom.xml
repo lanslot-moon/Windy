@@ -50,6 +50,11 @@
                 <artifactId>windy-auth</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>com.zj</groupId>
+                <artifactId>windy-metrics</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

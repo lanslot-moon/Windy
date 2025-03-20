@@ -30,6 +30,10 @@
     </dependency>
     <dependency>
       <groupId>com.zj</groupId>
+      <artifactId>windy-metrics</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.zj</groupId>
       <artifactId>windy-service</artifactId>
       <exclusions>
         <exclusion>

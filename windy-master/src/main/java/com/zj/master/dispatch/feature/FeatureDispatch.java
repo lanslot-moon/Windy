@@ -95,7 +95,7 @@ public class FeatureDispatch implements IDispatchExecutor {
         }
 
         for (TestCaseConfigBO config : configs) {
-            executeContext.set(config.getParamKey(), config.getValue());
+            executeContext.set(config.getParamKey(), Optional.ofNullable(config.getValue()).orElse(""));
         }
         return executeContext;
     }

@@ -249,6 +249,12 @@ public class MicroserviceService {
                 serviceApiPartMap.get(false));
     }
 
+    /**
+     * 将服务的API分类，true代表用例已覆盖，false代表未覆盖
+     * @param serviceId 服务ID
+     * @param serviceApiList 服务API列表
+     * @return 已分类的api
+     */
     public Map<Boolean, List<ServiceApiBO>> getServiceApiPartMap(String serviceId, List<ServiceApiBO> serviceApiList) {
         List<ExecuteTemplateBO> templates = getServiceAllExecuteTemplate(serviceId);
         List<String> templateApiList = templates.stream()

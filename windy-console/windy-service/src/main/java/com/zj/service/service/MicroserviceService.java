@@ -66,6 +66,7 @@ public class MicroserviceService {
 
     @Value("${windy.console.version}")
     private String consoleVersion;
+
     private final IMicroServiceRepository microServiceRepository;
     private final UniqueIdService uniqueIdService;
     private final IPipelineRepository pipelineRepository;
@@ -106,10 +107,7 @@ public class MicroserviceService {
     }
 
     private IGitRepositoryHandler getRepositoryBranch(String type) {
-        if (StringUtils.isBlank(type)) {
-            return null;
-        }
-        return repositoryBranches.stream().filter(repository -> type.equalsIgnoreCase(repository.gitType())).findAny().orElse(null);
+        return repositoryBranches.stream().filter(repository -> repository.gitType().equalsIgnoreCase(type)).findAny().orElse(null);
     }
 
     public PageSize<ServiceDto> getServices(Integer pageNo, Integer size, String name) {

@@ -106,7 +106,10 @@ public class MicroserviceService {
     }
 
     private IGitRepositoryHandler getRepositoryBranch(String type) {
-        return repositoryBranches.stream().filter(repository -> Objects.equals(repository.gitType(), type)).findAny().orElse(null);
+        if (StringUtils.isBlank(type)) {
+            return null;
+        }
+        return repositoryBranches.stream().filter(repository -> type.equalsIgnoreCase(repository.gitType())).findAny().orElse(null);
     }
 
     public PageSize<ServiceDto> getServices(Integer pageNo, Integer size, String name) {

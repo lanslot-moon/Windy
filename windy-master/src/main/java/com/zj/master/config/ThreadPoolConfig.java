@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author guyuelan
  * @since 2023/4/14
+ * @desc 线程池配置
  */
 @Slf4j
 @Configuration

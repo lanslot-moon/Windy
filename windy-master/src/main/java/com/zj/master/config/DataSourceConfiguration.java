@@ -7,6 +7,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
+/**
+ * @desc 数据库配置
+ */
 @Configuration
 public class DataSourceConfiguration {
     public static final String MARIADB_JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";

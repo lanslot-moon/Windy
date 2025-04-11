@@ -24,8 +24,8 @@ public class BaseEurekaAdapter {
     private final RestTemplate restTemplate;
     private final HttpHeaders headers;
     private final okhttp3.MediaType mediaType = okhttp3.MediaType.get("application/json; charset=utf-8");
-    protected final OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(60,
-            TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS).build();
+    protected final OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS).build();
 
     public BaseEurekaAdapter(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

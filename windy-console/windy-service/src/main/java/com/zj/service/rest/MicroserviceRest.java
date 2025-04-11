@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 应用微服务管理接口
+ */
 @RequestMapping("/v1/devops")
 @RestController
 public class MicroserviceRest {
@@ -38,6 +41,10 @@ public class MicroserviceRest {
         this.microservice = microservice;
     }
 
+    /**
+     * 获取Console控制台的版本号
+     * @return 版本号
+     */
     @ResponseBody
     @GetMapping("/system/version")
     public ResponseMeta<SystemVersion> getSystemVersion() {
@@ -50,6 +57,10 @@ public class MicroserviceRest {
         return new ResponseMeta<List<MicroserviceBO>>(ErrorCode.SUCCESS, microservice.getServicesByIds(serviceIds));
     }
 
+    /**
+     * 获取所有的应用的具体信息
+     * @return 应用信息列表
+     */
     @ResponseBody
     @GetMapping("/services")
     public ResponseMeta<List<MicroserviceBO>> queryServices() {
@@ -89,6 +100,11 @@ public class MicroserviceRest {
         return new ResponseMeta<Boolean>(ErrorCode.SUCCESS, microservice.deleteServiceMember(serviceId, userId));
     }
 
+    /**
+     * 创建并检测Git仓库是否存在对应应用
+     * @param serviceDto 应用信息
+     * @return 应用Id
+     */
     @ResponseBody
     @PostMapping("/services")
     public ResponseMeta<String> createService(@RequestBody ServiceDto serviceDto) {
@@ -107,6 +123,10 @@ public class MicroserviceRest {
         return new ResponseMeta<Boolean>(ErrorCode.SUCCESS, microservice.deleteService(serviceId));
     }
 
+    /**
+     * 获取的构建工具列表
+     * @return 工具列表,默认携带maven-3.8.3和Open-Jdk11
+     */
     @GetMapping(value = "/system/build/versions")
     public ResponseMeta<List<BuildToolBO>> getToolVersions() {
         return new ResponseMeta<>(ErrorCode.SUCCESS, microservice.getToolVersions());

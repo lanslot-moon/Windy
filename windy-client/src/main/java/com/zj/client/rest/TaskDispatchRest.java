@@ -37,6 +37,11 @@ public class TaskDispatchRest {
     return new ResponseMeta<>(ErrorCode.SUCCESS, taskDispatchService.runFeature(featureParam));
   }
 
+  /**
+   * 运行任务节点 一个流水线任务可以分为构建,审批,执行,测试,发布等节点
+   * @param taskNode
+   * @return
+   */
   @PostMapping("/dispatch/pipeline")
   public ResponseMeta<Boolean> createTask(@RequestBody TaskNode taskNode) {
     return new ResponseMeta<>(ErrorCode.SUCCESS, taskDispatchService.runPipeline(taskNode));

@@ -24,6 +24,7 @@ import java.util.concurrent.Executor;
 /**
  * @author guyuelan
  * @since 2023/5/9
+ * 代理执行器
  */
 @Slf4j
 @Component

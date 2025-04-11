@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 /**
  * @author guyuelan
  * @since 2023/3/30
+ * 节点执行器
  */
 @Slf4j
 @Component
@@ -54,27 +55,40 @@ public class NodeExecutor {
    */
   public void runNodeTask(String historyId, TaskNode node) {
     log.info("start run task historyId={}", historyId);
+    // 使用AtomicReference来保证状态更新的线程安全性，初始状态为RUNNING
     AtomicReference<ProcessStatus> statusAtomic = new AtomicReference<>(ProcessStatus.RUNNING);
+    // 初始化错误信息列表，默认为触发任务错误
     List<String> errorMsg = Collections.singletonList(TRIGGER_TASK_ERROR);
+    // 生成唯一的记录ID
     String recordId = uniqueIdService.getUniqueId();
     try {
+      // 设置节点的记录ID
       node.setRecordId(recordId);
+      // 遍历拦截器，执行每个拦截器的before方法
       interceptors.forEach(interceptor -> interceptor.before(node));
 
+      // 保存节点执行记录
       saveNodeRecord(historyId, node, recordId, statusAtomic);
 
+      // 根据节点的执行类型获取对应的触发器
       INodeTrigger nodeTrigger = triggerMap.get(node.getExecuteType());
       if (Objects.isNull(nodeTrigger)) {
+        // 如果没有找到对应的触发器，抛出执行异常
         throw new ExecuteException(ErrorCode.UNKNOWN_EXECUTE_TYPE);
       }
 
+      // 获取节点的请求上下文
       Object context = node.getRequestContext();
+      // 创建触发上下文
       TriggerContext triggerContext = new TriggerContext(context);
+      // 执行节点的触发逻辑
       nodeTrigger.triggerRun(triggerContext, node);
     } catch (ExecuteException executeException) {
+      // 如果捕获到执行异常，设置状态为FAIL，并更新错误信息
       statusAtomic.set(ProcessStatus.FAIL);
       errorMsg = Collections.singletonList(executeException.getMessage());
     } catch (Exception e) {
+      // 如果捕获到其他异常，记录错误日志，设置状态为FAIL，并获取异常的错误信息
       log.error("execute pipeline node error recordId={}", recordId, e);
       //如果请求失败则直接流水线终止
       statusAtomic.set(ProcessStatus.FAIL);

@@ -9,7 +9,6 @@ import com.zj.common.entity.dto.ResponseMeta;
 import com.zj.common.entity.dto.StopDispatch;
 import com.zj.common.entity.service.ToolLoadResult;
 import com.zj.common.entity.service.ToolVersionDto;
-import com.zj.common.utils.OrikaUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.springframework.http.ResponseEntity;
@@ -52,20 +51,22 @@ public class EurekaClientInvokerAdapter extends BaseEurekaAdapter implements ICl
     @Override
     public boolean runPipelineTask(Object pipelineTask, boolean isRequestSingle, String singleIp) {
         if (isRequestSingle) {
-            Optional<ServiceInstance> optional =
-                    discoverService.getServiceInstances(DiscoverService.WINDY_Client).stream()
-                            .filter(service -> Objects.equals(service.getIp(), singleIp)).findAny();
+            Optional<ServiceInstance> optional = discoverService.getServiceInstances(DiscoverService.WINDY_CLIENT)
+                    .stream()
+                    .filter(service -> Objects.equals(service.getIp(), singleIp))
+                    .findAny();
             if (!optional.isPresent()) {
                 log.info("send single request error, service not find ={}", singleIp);
                 return false;
             }
-            String url = DISPATCH_PIPELINE_TASK.replace(DiscoverService.WINDY_Client, optional.get().getHost());
+            String url = DISPATCH_PIPELINE_TASK.replace(DiscoverService.WINDY_CLIENT, optional.get().getHost());
             Response response = postWithIp(url, pipelineTask);
             if (Objects.nonNull(response)) {
                 response.close();
             }
             return Optional.ofNullable(response).map(Response::isSuccessful).orElse(false);
         }
+
         ResponseEntity<String> response = requestPost(DISPATCH_PIPELINE_TASK, pipelineTask);
         if (Objects.isNull(response)) {
             return false;
@@ -102,7 +103,7 @@ public class EurekaClientInvokerAdapter extends BaseEurekaAdapter implements ICl
 
     @Override
     public List<ToolLoadResult> loadBuildTool(ToolVersionDto toolVersion) {
-        List<ServiceInstance> serviceInstances = discoverService.getServiceInstances(DiscoverService.WINDY_Client);
+        List<ServiceInstance> serviceInstances = discoverService.getServiceInstances(DiscoverService.WINDY_CLIENT);
         return serviceInstances.stream().map(service -> {
             ToolLoadResult toolLoadResult = new ToolLoadResult();
             toolLoadResult.setNodeIP(service.getIp());
@@ -120,7 +121,7 @@ public class EurekaClientInvokerAdapter extends BaseEurekaAdapter implements ICl
                         ToolLoadResult.class)).map(ToolLoadResult::getSuccess).orElse(false);
                 toolLoadResult.setSuccess(loadResult);
                 response.close();
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.info("request client load tool error", e);
                 toolLoadResult.setSuccess(false);
             }
@@ -130,7 +131,7 @@ public class EurekaClientInvokerAdapter extends BaseEurekaAdapter implements ICl
 
     @Override
     public List<ClientCollectDto> requestClientMonitor() {
-        List<ServiceInstance> serviceInstances = discoverService.getServiceInstances(DiscoverService.WINDY_Client);
+        List<ServiceInstance> serviceInstances = discoverService.getServiceInstances(DiscoverService.WINDY_CLIENT);
         return serviceInstances.stream().map(service -> {
             String url = String.format(CLIENT_MONITOR_URL, service.getHost());
             log.info(" start request client monitor data url = {}", url);

@@ -7,6 +7,7 @@ import com.zj.common.enums.ProcessStatus;
 /**
  * @author guyuelan
  * @since 2022/5/30
+ * 节点执行拦截器
  */
 public interface INodeExecuteInterceptor {
 

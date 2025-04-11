@@ -28,41 +28,40 @@ import java.util.stream.Collectors;
 @Component
 public class RepositoryFactory {
 
-  private final IMicroServiceRepository serviceRepository;
-  private final ISystemConfigRepository systemConfigRepository;
-  private final Map<String, IGitRepositoryHandler> repositoryHandlerMap;
+    private final IMicroServiceRepository serviceRepository;
+    private final ISystemConfigRepository systemConfigRepository;
+    private final Map<String, IGitRepositoryHandler> repositoryHandlerMap;
 
-  public RepositoryFactory(IMicroServiceRepository serviceRepository, ISystemConfigRepository systemConfigRepository, List<IGitRepositoryHandler> repositories) {
-    this.serviceRepository = serviceRepository;
-    this.systemConfigRepository = systemConfigRepository;
-    repositoryHandlerMap = repositories.stream().collect(Collectors.toMap(IGitRepositoryHandler::gitType,
-            handler -> handler));
-  }
-
-  public IGitRepositoryHandler getRepository(String gitType) {
-    return repositoryHandlerMap.get(gitType);
-  }
-
-  public GitAccessInfo getServiceRepositoryAccessInfo(String serviceId) {
-    MicroserviceBO service = checkServiceExist(serviceId);
-    GitAccessInfo gitAccessInfo = Optional.ofNullable(service.getServiceConfig())
-            .map(ServiceConfig::getGitAccessInfo).filter(access -> StringUtils.isNotBlank(access.getAccessToken()))
-            .orElseGet(systemConfigRepository::getGitAccess);
-    ServiceContext serviceContext = service.getServiceConfig().getServiceContext();
-    if (Objects.nonNull(serviceContext)) {
-      gitAccessInfo.setMainBranch(serviceContext.getMainBranch());
-    }
-    gitAccessInfo.setGitUrl(service.getGitUrl());
-    return gitAccessInfo;
-  }
-
-  private MicroserviceBO checkServiceExist(String serviceId) {
-    MicroserviceBO serviceDetail = serviceRepository.queryServiceDetail(serviceId);
-    if (Objects.isNull(serviceDetail)) {
-      log.warn("can not find serviceId ={}", serviceId);
-      throw new ApiException(ErrorCode.NOT_FOUND_SERVICE);
+    public RepositoryFactory(IMicroServiceRepository serviceRepository, ISystemConfigRepository systemConfigRepository, List<IGitRepositoryHandler> repositories) {
+        this.serviceRepository = serviceRepository;
+        this.systemConfigRepository = systemConfigRepository;
+        repositoryHandlerMap = repositories.stream().collect(Collectors.toMap(item -> item.gitType().toLowerCase(), handler -> handler));
     }
 
-    return serviceDetail;
-  }
+    public IGitRepositoryHandler getRepository(String gitType) {
+        return repositoryHandlerMap.get(gitType.toLowerCase());
+    }
+
+    public GitAccessInfo getServiceRepositoryAccessInfo(String serviceId) {
+        MicroserviceBO service = checkServiceExist(serviceId);
+        GitAccessInfo gitAccessInfo = Optional.ofNullable(service.getServiceConfig())
+                .map(ServiceConfig::getGitAccessInfo).filter(access -> StringUtils.isNotBlank(access.getAccessToken()))
+                .orElseGet(systemConfigRepository::getGitAccess);
+        ServiceContext serviceContext = service.getServiceConfig().getServiceContext();
+        if (Objects.nonNull(serviceContext)) {
+            gitAccessInfo.setMainBranch(serviceContext.getMainBranch());
+        }
+        gitAccessInfo.setGitUrl(service.getGitUrl());
+        return gitAccessInfo;
+    }
+
+    private MicroserviceBO checkServiceExist(String serviceId) {
+        MicroserviceBO serviceDetail = serviceRepository.queryServiceDetail(serviceId);
+        if (Objects.isNull(serviceDetail)) {
+            log.warn("can not find serviceId ={}", serviceId);
+            throw new ApiException(ErrorCode.NOT_FOUND_SERVICE);
+        }
+
+        return serviceDetail;
+    }
 }

@@ -58,11 +58,20 @@ public class NodeBindRest {
     return service.getNodes(page, size, name);
   }
 
+  /**
+   * 获取添加节点时所有可以选择的流水线节点
+   * @return 所有可以选择的流水线节点[代码构建,执行等待,部署,用例任务,人工卡点,合并代码]
+   */
   @GetMapping("/nodes/all")
   public ResponseMeta<List<NodeBindBO>> getAllNodes() {
     return new ResponseMeta<List<NodeBindBO>>(ErrorCode.SUCCESS, service.getAllNodes());
   }
 
+  /**
+   * 获取节点执行动作
+   * @param nodeId 节点Id
+   * @return 节点执行动作列表
+   */
   @GetMapping("/{nodeId}/executors")
   public ResponseMeta<List<PipelineActionBO>> getNodeExecutors(
       @PathVariable("nodeId") String nodeId) {

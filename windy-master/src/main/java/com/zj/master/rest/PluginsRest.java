@@ -1,7 +1,7 @@
 package com.zj.master.rest;
 
-import com.zj.common.exception.ErrorCode;
 import com.zj.common.entity.dto.ResponseMeta;
+import com.zj.common.exception.ErrorCode;
 import com.zj.domain.entity.bo.feature.PluginInfoBO;
 import com.zj.master.service.PluginsService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,15 +18,20 @@ import java.util.List;
 @RequestMapping("/v1/devops/master")
 public class PluginsRest {
 
-  private final PluginsService pluginsService;
+    private final PluginsService pluginsService;
 
-  public PluginsRest(PluginsService pluginsService) {
-    this.pluginsService = pluginsService;
-  }
+    public PluginsRest(PluginsService pluginsService) {
+        this.pluginsService = pluginsService;
+    }
 
-  @GetMapping(value = "/plugins")
-  public ResponseMeta<List<PluginInfoBO>> getPlugins() {
-    return new ResponseMeta(ErrorCode.SUCCESS, pluginsService.getPlugins());
-  }
+    /**
+     * 获取所有可用插件
+     *
+     * @return
+     */
+    @GetMapping(value = "/plugins")
+    public ResponseMeta<List<PluginInfoBO>> getPlugins() {
+        return new ResponseMeta(ErrorCode.SUCCESS, pluginsService.getPlugins());
+    }
 
 }

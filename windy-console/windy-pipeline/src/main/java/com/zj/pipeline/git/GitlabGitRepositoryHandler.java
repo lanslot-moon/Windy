@@ -18,13 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,19 +36,24 @@ public class GitlabGitRepositoryHandler implements IGitRepositoryHandler {
         this.gitRequestProxy = gitRequestProxy;
     }
 
+// 定义一个私有静态方法，用于获取Git访问令牌的HTTP头部信息
     private static Map<String, String> getTokenHeader(GitAccessInfo gitAccessInfo) {
+        // 创建一个新的HashMap实例，用于存储HTTP头部信息
         Map<String, String> header = new HashMap<>();
+        // 从传入的GitAccessInfo对象中获取访问令牌
         String accessToken = gitAccessInfo.getAccessToken();
+        // 将访问令牌添加到头部信息中，键为"Private-Token"
         header.put("Private-Token", accessToken);
+        // 返回包含访问令牌的头部信息Map
         return header;
     }
 
     private void loadGitRepositories(GitAccessInfo accessInfo) {
         try {
             List<GitlabRepositoryVo> gitlabRepositories = getGitlabRepositories(accessInfo);
-            serviceIdMap = gitlabRepositories.stream()
-                    .collect(Collectors.toMap(this::getRepositoryName, GitlabRepositoryVo::getId,
-                            (value1, value2) -> value2));
+            serviceIdMap = gitlabRepositories
+                    .stream()
+                    .collect(Collectors.toMap(this::getRepositoryName, GitlabRepositoryVo::getId, (value1, value2) -> value2));
         } catch (Exception e) {
             log.info("load gitlab repositories error ={}", e.getMessage());
         }
@@ -79,8 +78,7 @@ public class GitlabGitRepositoryHandler implements IGitRepositoryHandler {
     @Override
     public List<CommitMessage> getBranchCommits(String branch, GitAccessInfo accessInfo) {
         Integer projectId = transformProjectId(accessInfo);
-        String path = String.format("/api/v4/projects/%s/repository/commits?ref_name=%s&per_page=%d", projectId,
-                branch, 20);
+        String path = String.format("/api/v4/projects/%s/repository/commits?ref_name=%s&per_page=%d", projectId, branch, 20);
         String result = gitRequestProxy.get(accessInfo.getGitDomain() + path, getTokenHeader(accessInfo));
         List<JSONObject> commitsJson = JSON.parseArray(result, JSONObject.class);
         return commitsJson.stream()
@@ -124,8 +122,7 @@ public class GitlabGitRepositoryHandler implements IGitRepositoryHandler {
     @Override
     public void deleteBranch(String branchName, GitAccessInfo accessInfo) {
         Integer projectId = transformProjectId(accessInfo);
-        String path = String.format("/api/v4/projects/%s/repository/branches/%s", projectId,
-                branchName);
+        String path = String.format("/api/v4/projects/%s/repository/branches/%s", projectId, branchName);
         String result = gitRequestProxy.delete(accessInfo.getGitDomain() + path, getTokenHeader(accessInfo));
         log.info("gitlab delete branch result = {}", result);
     }
@@ -166,8 +163,7 @@ public class GitlabGitRepositoryHandler implements IGitRepositoryHandler {
             throw new ApiException(ErrorCode.REPO_NOT_EXIST);
         }
 
-        Optional<GitlabRepositoryVo> optional = repositories.stream().filter(repo -> isMatchRepo(accessInfo, repo))
-                .findAny();
+        Optional<GitlabRepositoryVo> optional = repositories.stream().filter(repo -> isMatchRepo(accessInfo, repo)).findAny();
         if (!optional.isPresent()) {
             log.info("user can not access gitlab repository permission={}", accessInfo.getGitServiceName());
             throw new ApiException(ErrorCode.USER_NO_PERMISSION);
@@ -186,8 +182,8 @@ public class GitlabGitRepositoryHandler implements IGitRepositoryHandler {
     }
 
     private List<GitlabRepositoryVo> getGitlabRepositories(GitAccessInfo accessInfo) {
-        Response response = gitRequestProxy.getWithResponse(accessInfo.getGitDomain() + "/api/v4/projects?per_page" +
-                "=100&page=1", getTokenHeader(accessInfo));
+        Response response = gitRequestProxy.getWithResponse(accessInfo.getGitDomain() + "/api/v4/projects?per_page"
+                + "=100&page=1", getTokenHeader(accessInfo));
         try {
             String result = response.body().string();
             List<GitlabRepositoryVo> allRepositories = JSON.parseArray(result, GitlabRepositoryVo.class);
@@ -209,8 +205,8 @@ public class GitlabGitRepositoryHandler implements IGitRepositoryHandler {
         int num = Integer.parseInt(numString);
         List<GitlabRepositoryVo> list = new ArrayList<>();
         for (int i = 2; i <= num; i++) {
-            Response response = gitRequestProxy.getWithResponse(accessInfo.getGitDomain() + "/api/v4/projects" +
-                            "?per_page=100&page=" + i,
+            Response response = gitRequestProxy.getWithResponse(accessInfo.getGitDomain() + "/api/v4/projects"
+                            + "?per_page=100&page=" + i,
                     getTokenHeader(accessInfo));
             try {
                 String result = response.body().string();
@@ -223,8 +219,7 @@ public class GitlabGitRepositoryHandler implements IGitRepositoryHandler {
     }
 
     private List<GitlabRepositoryVo> getGitlabRepository(GitAccessInfo accessInfo) {
-        String result =
-                gitRequestProxy.get(accessInfo.getGitDomain() + "/api/v4/projects?search=" + accessInfo.getGitServiceName(),
+        String result = gitRequestProxy.get(accessInfo.getGitDomain() + "/api/v4/projects?search=" + accessInfo.getGitServiceName(),
                         getTokenHeader(accessInfo));
         return JSON.parseArray(result, GitlabRepositoryVo.class);
     }

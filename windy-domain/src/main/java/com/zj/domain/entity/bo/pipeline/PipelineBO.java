@@ -32,7 +32,7 @@ public class PipelineBO {
   /**
    * 服务名
    */
-  private String ServiceName;
+  private String serviceName;
 
   /**
    * 流水线类型
@@ -54,5 +54,8 @@ public class PipelineBO {
    */
   private Integer pipelineStatus;
 
+  /**
+   * 流水线节点列表
+   */
   private List<PipelineStageBO> stageList;
 }

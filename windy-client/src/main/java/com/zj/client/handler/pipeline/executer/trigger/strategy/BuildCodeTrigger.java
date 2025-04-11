@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 代码构建处理
+ *
  * @author guyuelan
  * @since 2023/5/8
  */
@@ -21,27 +22,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class BuildCodeTrigger implements INodeTrigger {
 
-  private final CodeBuildService codeBuildService;
+    private final CodeBuildService codeBuildService;
 
-  public BuildCodeTrigger(CodeBuildService codeBuildService) {
-    this.codeBuildService = codeBuildService;
-  }
+    public BuildCodeTrigger(CodeBuildService codeBuildService) {
+        this.codeBuildService = codeBuildService;
+    }
 
-  @Override
-  public ExecuteType type() {
-    return ExecuteType.BUILD;
-  }
+    @Override
+    public ExecuteType type() {
+        return ExecuteType.BUILD;
+    }
 
-  @Override
-  public void triggerRun(TriggerContext triggerContext, TaskNode taskNode) throws Exception {
-    log.info("start build code context = {}", JSON.toJSONString(triggerContext));
-    CodeBuildParamDto codeBuildParamDto = JSON.parseObject(JSON.toJSONString(triggerContext.getData()), CodeBuildParamDto.class);
-    codeBuildParamDto.setRecordId(taskNode.getRecordId());
-    codeBuildService.buildCode(codeBuildParamDto, taskNode);
-  }
+    @Override
+    public void triggerRun(TriggerContext triggerContext, TaskNode taskNode) throws Exception {
+        log.info("start build code context = {}", JSON.toJSONString(triggerContext));
+        CodeBuildParamDto codeBuildParamDto = JSON.parseObject(JSON.toJSONString(triggerContext.getData()), CodeBuildParamDto.class);
+        codeBuildParamDto.setRecordId(taskNode.getRecordId());
+        codeBuildService.buildCode(codeBuildParamDto, taskNode);
+    }
 
-  @Override
-  public QueryResponseModel queryStatus(RefreshContext refreshContext, TaskNode taskNode) {
-    return codeBuildService.getRecordStatus(taskNode.getRecordId());
-  }
+    @Override
+    public QueryResponseModel queryStatus(RefreshContext refreshContext, TaskNode taskNode) {
+        return codeBuildService.getRecordStatus(taskNode.getRecordId());
+    }
 }

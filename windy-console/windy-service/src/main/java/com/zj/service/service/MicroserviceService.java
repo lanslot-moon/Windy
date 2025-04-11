@@ -147,8 +147,11 @@ public class MicroserviceService {
             throw new ApiException(ErrorCode.NOT_FIND_REPO_CONFIG);
         }
 
-        GitAccessInfo gitAccessInfo =
-                Optional.ofNullable(serviceDto.getServiceConfig()).map(ServiceConfig::getGitAccessInfo).filter(access -> StringUtils.isNotBlank(access.getAccessToken())).orElseGet(systemConfig::getGitAccess);
+        GitAccessInfo gitAccessInfo = Optional.ofNullable(serviceDto.getServiceConfig())
+                .map(ServiceConfig::getGitAccessInfo)
+                .filter(access -> StringUtils.isNotBlank(access.getAccessToken()))
+                .orElseGet(systemConfig::getGitAccess);
+
         gitAccessInfo.setGitUrl(serviceDto.getGitUrl());
         repositoryBranch.checkRepository(gitAccessInfo);
 

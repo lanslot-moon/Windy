@@ -32,12 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.Closeable;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
@@ -76,9 +71,9 @@ public class CodeBuildService {
                 //从git服务端拉取代码
                 String gitUrl = codeBuildParam.getGitUrl();
                 String serviceName = Optional.ofNullable(codeBuildParam.getServiceName())
-                        .filter(StringUtils::isNoneBlank).orElseGet(() -> GitUtils.getServiceFromUrl(gitUrl));
-                String pipelineWorkspace = globalEnvConfig.getPipelineWorkspace(serviceName,
-                        codeBuildParam.getPipelineId());
+                        .filter(StringUtils::isNoneBlank)
+                        .orElseGet(() -> GitUtils.getServiceFromUrl(gitUrl));
+                String pipelineWorkspace = globalEnvConfig.getPipelineWorkspace(serviceName, codeBuildParam.getPipelineId());
 
                 //1 拉取代码到本地
                 updateProcessMsg(taskNode, "拉取代码: " + gitUrl);
@@ -96,7 +91,7 @@ public class CodeBuildService {
                 context.setVersion(codeBuildParam.getVersion());
                 context.setBuildPath(codeBuildParam.getBuildVersion());
                 Integer exitCode = codeBuilder.build(context, message -> {
-                    if (StringUtils.isNotBlank(message)){
+                    if (StringUtils.isNotBlank(message)) {
                         notifyMessage(taskNode, message);
                     }
                 });
@@ -114,8 +109,7 @@ public class CodeBuildService {
                 }
 
                 // 4处理构建结果
-                String deployDirPath =
-                        new File(pomPath).getParentFile().getPath() + File.separator + WindyConstants.DEPLOY;
+                String deployDirPath = new File(pomPath).getParentFile().getPath() + File.separator + WindyConstants.DEPLOY;
                 handleBuildResult(codeBuildParam, exitCode, remoteImage, deployDirPath);
             } catch (Exception e) {
                 log.error("buildCode error", e);
@@ -175,8 +169,7 @@ public class CodeBuildService {
     private void pullCodeFrmGit(CodeBuildParamDto codeBuildParamDto, String pipelineWorkspace)
             throws Exception {
         if (codeBuildParamDto.isPublish()) {
-            gitProcessor.createTempBranch(codeBuildParamDto, codeBuildParamDto.getBranches(),
-                    pipelineWorkspace);
+            gitProcessor.createTempBranch(codeBuildParamDto, codeBuildParamDto.getBranches(), pipelineWorkspace);
         } else {
             String branch = codeBuildParamDto.getBranches().stream().findFirst().orElse(null);
             gitProcessor.pullCodeFromGit(codeBuildParamDto, branch, pipelineWorkspace);

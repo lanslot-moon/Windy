@@ -10,6 +10,7 @@ import com.zj.common.enums.ExecuteType;
 /**
  * @author guyuelan
  * @since 2022/5/25
+ * 节点触发器
  */
 public interface INodeTrigger {
 

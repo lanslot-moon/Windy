@@ -14,26 +14,26 @@ import java.util.Map;
 @Data
 public class QueryResponseModel {
 
-  private Integer status;
-
-  private Map<String, Object> context;
-
-  private List<String> message = new ArrayList<>();
-
-  private Object data;
-
-  public void addMessage(String msg) {
-    message.add(msg);
-  }
-
-  public void addAllMessage(List<String> msgList) {
-    message.addAll(msgList);
-  }
-
-  @Data
-  @AllArgsConstructor
-  public static class ResponseStatus{
-
     private Integer status;
-  }
+
+    private Map<String, Object> context;
+
+    private List<String> message = new ArrayList<>();
+
+    private Object data;
+
+    public void addMessage(String msg) {
+        message.add(msg);
+    }
+
+    public void addAllMessage(List<String> msgList) {
+        message.addAll(msgList);
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class ResponseStatus {
+
+        private Integer status;
+    }
 }

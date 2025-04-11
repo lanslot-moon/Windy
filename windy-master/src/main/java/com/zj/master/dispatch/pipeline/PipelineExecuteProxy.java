@@ -3,11 +3,11 @@ package com.zj.master.dispatch.pipeline;
 import com.alibaba.fastjson.JSON;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.zj.common.adapter.invoker.IClientInvoker;
+import com.zj.common.entity.dto.StopDispatch;
 import com.zj.common.enums.DispatchType;
 import com.zj.common.enums.LogType;
 import com.zj.common.enums.ProcessStatus;
-import com.zj.common.entity.dto.StopDispatch;
-import com.zj.common.adapter.invoker.IClientInvoker;
 import com.zj.common.utils.IpUtils;
 import com.zj.domain.entity.bo.pipeline.NodeRecordBO;
 import com.zj.domain.entity.bo.pipeline.PipelineHistoryBO;
@@ -23,11 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -82,17 +78,15 @@ public class PipelineExecuteProxy implements IStopEventListener {
             taskNode.setLogId(logId);
             taskNode.setDispatchType(DispatchType.PIPELINE.name());
             taskNode.setMasterIp(IpUtils.getLocalIP());
-
+            // 执行前置拦截器 tip: 即编译,审批
             interceptBefore(taskNode);
 
             RequestContext requestContext = taskNode.getRequestContext();
-            boolean dispatchResult = clientInvoker.runPipelineTask(taskNode, requestContext.isRequestSingle(),
-                    requestContext.getSingleClientIp());
+            boolean dispatchResult = clientInvoker.runPipelineTask(taskNode, requestContext.isRequestSingle(), requestContext.getSingleClientIp());
             if (!dispatchResult) {
                 log.info("dispatch pipeline task to client fail logId={}", logId);
                 //todo 这个地方需要将错误描述添加进来，否则控制台不知道什原因
-                NodeStatusChange change = buildStatusChange(pipelineTask, taskNode.getHistoryId(),
-                        taskNode.getNodeId(), ProcessStatus.FAIL);
+                NodeStatusChange change = buildStatusChange(pipelineTask, taskNode.getHistoryId(), taskNode.getNodeId(), ProcessStatus.FAIL);
                 pipelineEndProcessor.statusChange(change);
                 return null;
             }
@@ -103,8 +97,7 @@ public class PipelineExecuteProxy implements IStopEventListener {
         }).exceptionally(e -> {
             log.error("handle task error", e);
             //todo 这个地方需要将错误描述添加进来，否则控制台不知道什原因
-            NodeStatusChange change = buildStatusChange(pipelineTask, taskNode.getHistoryId(),
-                    taskNode.getNodeId(), ProcessStatus.FAIL);
+            NodeStatusChange change = buildStatusChange(pipelineTask, taskNode.getHistoryId(), taskNode.getNodeId(), ProcessStatus.FAIL);
             pipelineEndProcessor.statusChange(change);
             return null;
         });

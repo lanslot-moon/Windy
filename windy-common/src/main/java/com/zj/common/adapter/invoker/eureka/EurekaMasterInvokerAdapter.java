@@ -1,26 +1,17 @@
 package com.zj.common.adapter.invoker.eureka;
 
 import com.alibaba.fastjson.JSON;
-import com.zj.common.adapter.invoker.IMasterInvoker;
-import com.zj.common.entity.dto.DispatchTaskModel;
-import com.zj.common.entity.dto.MasterCollectDto;
-import com.zj.common.entity.dto.PluginInfo;
-import com.zj.common.entity.dto.ResponseMeta;
-import com.zj.common.entity.dto.ResponseStatusModel;
-import com.zj.common.entity.dto.ResultEvent;
 import com.zj.common.adapter.discover.DiscoverService;
 import com.zj.common.adapter.discover.ServiceInstance;
+import com.zj.common.adapter.invoker.IMasterInvoker;
+import com.zj.common.entity.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -87,7 +78,7 @@ public class EurekaMasterInvokerAdapter extends BaseEurekaAdapter implements IMa
                     log.info("start notify master ip={} result", serviceInstance.getHost());
                     // 如果触发任务执行的master节点存在那么优先访问触发任务的master节点
                     Response response = postWithIp(url, resultEvent);
-                    if (Objects.nonNull(response)){
+                    if (Objects.nonNull(response)) {
                         response.close();
                         return response.isSuccessful();
                     }

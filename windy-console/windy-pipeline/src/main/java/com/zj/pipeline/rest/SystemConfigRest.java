@@ -60,18 +60,31 @@ public class SystemConfigRest {
     return new ResponseMeta<>(ErrorCode.SUCCESS, systemConfigService.getSystemConfig(configId));
   }
 
+  /**
+   * 获取全局Git配置
+   * @return Git配置
+   */
   @ResponseBody
   @GetMapping("/system/config/git")
   public ResponseMeta<GitAccessInfo> getGitConfig() {
     return new ResponseMeta<>(ErrorCode.SUCCESS, systemConfigService.getGitConfig());
   }
 
+  /**
+   * 创建Git推送密钥
+   * @return 密钥
+   */
   @ResponseBody
   @PostMapping("/system/git/push/secret")
   public ResponseMeta<String> createPushSecret() {
     return new ResponseMeta<>(ErrorCode.SUCCESS, systemConfigService.createPushSecret());
   }
 
+  /**
+   * 更新全局Git配置
+   * @param config Git配置
+   * @return 全局Git配置
+   */
   @ResponseBody
   @PutMapping("/system/config/git")
   public ResponseMeta<Boolean> updateGit(@RequestBody GitAccessInfo config) {
@@ -102,6 +115,10 @@ public class SystemConfigRest {
     return new ResponseMeta<>(ErrorCode.SUCCESS, systemConfigService.updateRepository(repository));
   }
 
+  /**
+   * 获取默认流水线节点
+   * @return 默认流水线节点，默认情况下只有开始和结束节点
+   */
   @ResponseBody
   @GetMapping("/system/config/pipe")
   public ResponseMeta<DefaultPipelineVo> getDefaultPipeline() {

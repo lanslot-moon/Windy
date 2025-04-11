@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * @author guyuelan
  * @since 2021/9/28
+ * @description: 流水线接口
  */
 @RequestMapping("/v1/devops/pipeline")
 @RestController
@@ -41,10 +42,15 @@ public class PipelineRest {
         return new ResponseMeta<>(ErrorCode.SUCCESS, pipelineService.getPipelineDetail(pipelineId));
     }
 
+    /**
+     * 创建流水线
+     * @param pipelineDto 流水线信息
+     * @return 流水线Id
+     */
     @ResponseBody
     @PostMapping("")
     public ResponseMeta<String> createPipeline(@Validated(Create.class) @RequestBody PipelineDto pipelineDto) {
-        return new ResponseMeta<String>(ErrorCode.SUCCESS, pipelineService.createPipeline(pipelineDto));
+        return new ResponseMeta<>(ErrorCode.SUCCESS, pipelineService.createPipeline(pipelineDto));
     }
 
     @ResponseBody
@@ -52,10 +58,14 @@ public class PipelineRest {
     public ResponseMeta<Boolean> updatePipeline(@PathVariable("service") String service,
                                                 @PathVariable("pipelineId") String pipelineId,
                                                 @Validated(Update.class) @RequestBody PipelineDto pipelineDto) {
-        return new ResponseMeta<Boolean>(ErrorCode.SUCCESS, pipelineService.updatePipeline(service, pipelineId,
-                pipelineDto));
+        return new ResponseMeta<>(ErrorCode.SUCCESS, pipelineService.updatePipeline(service, pipelineId, pipelineDto));
     }
 
+    /**
+     * 获取指定服务下的流水线列表
+     * @param serviceId 应用服务Id
+     * @return 流水线列表
+     */
     @ResponseBody
     @GetMapping("/{serviceId}/list")
     public ResponseMeta<List<PipelineBO>> listPipelines(@PathVariable("serviceId") String serviceId) {
@@ -81,15 +91,20 @@ public class PipelineRest {
         return new ResponseMeta<>(ErrorCode.SUCCESS, pipelineService.deletePipeline(service, pipelineId));
     }
 
+    /**
+     * 运行指定流水线
+     * @param pipelineId 流水线Id
+     * @return
+     */
     @ResponseBody
     @PostMapping("/{pipelineId}")
     public ResponseMeta<String> execute(@PathVariable("pipelineId") String pipelineId) {
-        return new ResponseMeta<String>(ErrorCode.SUCCESS, pipelineService.execute(pipelineId));
+        return new ResponseMeta<>(ErrorCode.SUCCESS, pipelineService.execute(pipelineId));
     }
 
     @ResponseBody
     @PutMapping("/{historyId}/pause")
     public ResponseMeta<Boolean> pause(@PathVariable("historyId") String historyId) {
-        return new ResponseMeta<Boolean>(ErrorCode.SUCCESS, pipelineService.pause(historyId));
+        return new ResponseMeta<>(ErrorCode.SUCCESS, pipelineService.pause(historyId));
     }
 }

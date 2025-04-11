@@ -14,39 +14,43 @@ import java.util.stream.Collectors;
 @Service
 public class DiscoverService {
 
-  public static final String WINDY_MASTER = "WindyMaster";
-  public static final String WINDY_Client = "WindyClient";
+    public static final String WINDY_MASTER = "WindyMaster";
+    public static final String WINDY_CLIENT = "WindyClient";
 
-  private final DiscoveryClient discoveryClient;
+    private final DiscoveryClient discoveryClient;
 
-  public DiscoverService(DiscoveryClient discoveryClient) {
-    this.discoveryClient = discoveryClient;
-  }
+    public DiscoverService(DiscoveryClient discoveryClient) {
+        this.discoveryClient = discoveryClient;
+    }
 
-  public ServiceInstance getWindyMasterByIp( String ip) {
-    List<ServiceInstance> serviceInstances = getServiceInstances(WINDY_MASTER);
-    return serviceInstances.stream().filter(instance -> Objects.equals(ip, instance.getIp()))
-        .findFirst().orElse(null);
-  }
+    public ServiceInstance getWindyMasterByIp(String ip) {
+        List<ServiceInstance> serviceInstances = getServiceInstances(WINDY_MASTER);
+        return serviceInstances.stream()
+                .filter(instance -> Objects.equals(ip, instance.getIp()))
+                .findFirst()
+                .orElse(null);
+    }
 
-  public ServiceInstance getWindyClientByIp( String ip) {
-    List<ServiceInstance> serviceInstances = getServiceInstances(WINDY_Client);
-    return serviceInstances.stream().filter(instance -> Objects.equals(ip, instance.getIp()))
-        .findFirst().orElse(null);
-  }
+    public ServiceInstance getWindyClientByIp(String ip) {
+        List<ServiceInstance> serviceInstances = getServiceInstances(WINDY_CLIENT);
+        return serviceInstances.stream()
+                .filter(instance -> Objects.equals(ip, instance.getIp()))
+                .findFirst()
+                .orElse(null);
+    }
 
-  public List<ServiceInstance> getWindyClientInstances(){
-    return getServiceInstances(WINDY_Client);
-  }
+    public List<ServiceInstance> getWindyClientInstances() {
+        return getServiceInstances(WINDY_CLIENT);
+    }
 
-  public List<ServiceInstance> getServiceInstances(String serviceId) {
-    return discoveryClient.getInstances(serviceId).stream().map(instance -> {
-      ServiceInstance serviceInstance = new ServiceInstance();
-      serviceInstance.setServiceId(instance.getServiceId());
-      serviceInstance.setIp(instance.getHost());
-      serviceInstance.setPort(instance.getPort());
-      serviceInstance.setHost(instance.getHost() + ":" + instance.getPort());
-      return serviceInstance;
-    }).collect(Collectors.toList());
-  }
+    public List<ServiceInstance> getServiceInstances(String serviceId) {
+        return discoveryClient.getInstances(serviceId).stream().map(instance -> {
+            ServiceInstance serviceInstance = new ServiceInstance();
+            serviceInstance.setServiceId(instance.getServiceId());
+            serviceInstance.setIp(instance.getHost());
+            serviceInstance.setPort(instance.getPort());
+            serviceInstance.setHost(instance.getHost() + ":" + instance.getPort());
+            return serviceInstance;
+        }).collect(Collectors.toList());
+    }
 }

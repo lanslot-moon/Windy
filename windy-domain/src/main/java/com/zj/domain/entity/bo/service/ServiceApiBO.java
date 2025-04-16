@@ -50,7 +50,7 @@ public class ServiceApiBO {
     /**
      * api信息
      * type = http时api内容为uri
-     * type = http时api内容为service#method
+     * type = dubbo时api内容为service#method
      */
     private String resource;
 

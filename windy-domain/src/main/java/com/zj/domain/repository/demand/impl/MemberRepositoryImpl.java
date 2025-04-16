@@ -59,8 +59,9 @@ public class MemberRepositoryImpl extends ServiceImpl<ResourceMemberMapper, Reso
 
     @Override
     public List<ResourceMemberBO> getByRelationMember(String relationId, String memberType) {
-        List<ResourceMember> resourceMembers = list(Wrappers.lambdaQuery(ResourceMember.class).eq(ResourceMember::getRelationId,
-                relationId).eq(ResourceMember::getMemberType, memberType));
+        List<ResourceMember> resourceMembers = list(Wrappers.lambdaQuery(ResourceMember.class)
+                .eq(ResourceMember::getRelationId, relationId)
+                .eq(ResourceMember::getMemberType, memberType));
         return OrikaUtil.convertList(resourceMembers, ResourceMemberBO.class);
     }
 

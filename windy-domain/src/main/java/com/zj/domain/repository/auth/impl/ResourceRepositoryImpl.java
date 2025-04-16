@@ -44,16 +44,17 @@ public class ResourceRepositoryImpl extends ServiceImpl<ResourceMapper, Resource
 
     @Override
     public List<ResourceBO> getResourceByUserId(String userId) {
-        List<UserRole> userRoles =
-                userRoleMapper.selectList(Wrappers.lambdaQuery(UserRole.class).eq(UserRole::getUserId, userId));
+        List<UserRole> userRoles = userRoleMapper.selectList(Wrappers.lambdaQuery(UserRole.class)
+                .eq(UserRole::getUserId, userId));
         if (CollectionUtils.isEmpty(userRoles)) {
             return Collections.emptyList();
         }
 
-        List<String> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
-        List<RoleResource> roleResources =
-                roleResourceMapper.selectList(Wrappers.lambdaQuery(RoleResource.class).in(RoleResource::getRoleId,
-                        roleIds));
+        List<String> roleIds = userRoles.stream()
+                .map(UserRole::getRoleId)
+                .collect(Collectors.toList());
+        List<RoleResource> roleResources = roleResourceMapper.selectList(Wrappers.lambdaQuery(RoleResource.class)
+                .in(RoleResource::getRoleId, roleIds));
         return getResourceList(roleResources);
     }
 

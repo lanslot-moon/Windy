@@ -59,7 +59,7 @@ public class ApiModel {
   private String method;
 
   /**
-   * api信息 type = http时api内容为uri type = http时api内容为service#method
+   * api信息 type = http时api内容为uri type = dubbo时api内容为service#method
    */
   @Length(max = 256 )
   private String resource;

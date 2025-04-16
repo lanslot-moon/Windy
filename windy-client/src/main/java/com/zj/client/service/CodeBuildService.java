@@ -160,8 +160,7 @@ public class CodeBuildService {
 
     private String startBuildDocker(String serviceName, String dockerFilePath, CodeBuildParamDto param)
             throws InterruptedException {
-        String version =
-                Optional.ofNullable(param.getVersion()).filter(StringUtils::isNoneBlank).orElseGet(() -> dateFormat.format(new Date()));
+        String version = Optional.ofNullable(param.getVersion()).filter(StringUtils::isNoneBlank).orElseGet(() -> dateFormat.format(new Date()));
         File dockerFile = new File(dockerFilePath);
         return buildDocker(serviceName.toLowerCase(), version, dockerFile, param);
     }

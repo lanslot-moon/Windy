@@ -67,6 +67,13 @@ public class MicroserviceRest {
         return new ResponseMeta<List<MicroserviceBO>>(ErrorCode.SUCCESS, microservice.getServices());
     }
 
+    /**
+     * 分页获取应用信息
+     * @param page 页码
+     * @param size 页大小
+     * @param name 应用名称
+     * @return 应用信息列表
+     */
     @ResponseBody
     @GetMapping("/services/page")
     public ResponseMeta<PageSize<ServiceDto>> queryPageServices(@RequestParam(value = "page", defaultValue = "1") Integer page,

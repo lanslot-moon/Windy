@@ -27,6 +27,11 @@ public class TaskDispatchRest {
     this.taskDispatchService = taskDispatchService;
   }
 
+  /**
+   * api管理-二方包生成
+   * @param generate
+   * @return
+   */
   @PostMapping("/dispatch/generate")
   public ResponseMeta<Boolean> dispatchGenerate(@RequestBody GenerateDto generate) {
     return new ResponseMeta<>(ErrorCode.SUCCESS, taskDispatchService.runGenerate(generate));

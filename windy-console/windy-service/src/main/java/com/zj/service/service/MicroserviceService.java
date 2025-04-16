@@ -40,24 +40,14 @@ import com.zj.domain.repository.pipeline.ISystemConfigRepository;
 import com.zj.domain.repository.service.IBuildToolRepository;
 import com.zj.domain.repository.service.IMicroServiceRepository;
 import com.zj.domain.repository.service.IServiceApiRepository;
-import com.zj.service.entity.ServiceDto;
-import com.zj.service.entity.ServiceMemberDto;
-import com.zj.service.entity.ServiceStaticsDto;
-import com.zj.service.entity.SystemBuildDto;
-import com.zj.service.entity.SystemVersion;
+import com.zj.service.entity.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -114,14 +104,12 @@ public class MicroserviceService {
 
     public PageSize<ServiceDto> getServices(Integer pageNo, Integer size, String name) {
         String currentUserId = authService.getCurrentUserId();
-        List<ResourceMemberBO> resourceMembers = memberRepository.getByRelationMember(currentUserId,
-                MemberType.SERVICE_MEMBER.getType());
+        List<ResourceMemberBO> resourceMembers = memberRepository.getByRelationMember(currentUserId, MemberType.SERVICE_MEMBER.getType());
         if (CollectionUtils.isEmpty(resourceMembers)) {
             return new PageSize<>();
         }
 
-        List<String> serviceIds =
-                resourceMembers.stream().map(ResourceMemberBO::getResourceId).collect(Collectors.toList());
+        List<String> serviceIds = resourceMembers.stream().map(ResourceMemberBO::getResourceId).collect(Collectors.toList());
         IPage<MicroserviceBO> page = microServiceRepository.getServices(pageNo, size, name, serviceIds);
         PageSize<ServiceDto> pageSize = new PageSize<>();
         if (CollectionUtils.isEmpty(page.getRecords())) {

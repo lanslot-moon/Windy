@@ -52,7 +52,7 @@ public class PermissionService {
         whiteList.add("/img/**");
         whiteList.add("/fonts/**");
         whiteList.add("/media/**");
-        whiteList.add( "/static/**");
+        whiteList.add("/static/**");
     }
 
     public void removeUserCache(String userId) {
@@ -82,9 +82,14 @@ public class PermissionService {
             return true;
         }
 
+        // 基于标准的RBAC权限模型，用户对应角色,角色拥有资源，资源拥有权限
         List<ResourceBO> userResources = getResourcesFromCache(userSession.getUserId());
+
         String groupId = userSession.getUserBO().getGroupId();
+        // 添加基于ABAC权限模型,用户组拥有资源
         List<ResourceBO> groupResources = getResourcesFromCache(groupId);
+
+        // 用户拥有的资源列表和用户组拥有的资源列表合并,使用ABAC权限模型补充RBAC权限模型的缺点
         Collection<ResourceBO> resources = CollectionUtils.union(userResources, groupResources);
         resources.addAll(groupResources);
         if (CollectionUtils.isEmpty(resources)) {
@@ -95,12 +100,10 @@ public class PermissionService {
         String operate = request.getMethod();
         boolean matchURI = resources.stream().anyMatch(resource -> {
             boolean match = antPathMatcher.match(resource.getContent(), requestUri);
-            return match && (Objects.equals(resource.getOperate(), Constants.ANY_OPERATE) || Objects.equals(operate,
-                    resource.getOperate()));
+            return match && (Objects.equals(resource.getOperate(), Constants.ANY_OPERATE) || Objects.equals(operate, resource.getOperate()));
         });
         if (!matchURI) {
-            log.info("user do not have permission user={} uri={} operate={}", userSession.getUserId(), requestUri,
-                    operate);
+            log.info("user do not have permission user={} uri={} operate={}", userSession.getUserId(), requestUri, operate);
         }
         return matchURI;
     }

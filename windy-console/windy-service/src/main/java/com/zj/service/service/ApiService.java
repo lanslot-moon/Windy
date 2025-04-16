@@ -26,11 +26,7 @@ import com.zj.domain.repository.service.IServiceApiRepository;
 import com.zj.plugin.loader.InitData;
 import com.zj.plugin.loader.ParamValueType;
 import com.zj.plugin.loader.ParameterDefine;
-import com.zj.service.entity.ApiModel;
-import com.zj.service.entity.ApiRequestVariable;
-import com.zj.service.entity.ExecuteTemplateDto;
-import com.zj.service.entity.GenerateTemplate;
-import com.zj.service.entity.ImportApiResult;
+import com.zj.service.entity.*;
 import com.zj.service.service.imports.ApiImportFactory;
 import com.zj.service.service.imports.IApiImportStrategy;
 import lombok.extern.slf4j.Slf4j;
@@ -40,13 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -128,53 +118,59 @@ public class ApiService {
         return masterInvoker.runGenerateTask(dispatchTaskModel);
     }
 
+    // 定义一个私有方法用于检查生成类名
     private void checkGenerateClassName(ServiceGenerateBO generate) {
+        // 从apiRepository中获取指定服务ID的API列表，并过滤出API类型为true的项
         List<ServiceApiBO> serviceApiList = apiRepository.getApiByService(generate.getServiceId())
                 .stream().filter(ServiceApiBO::isApi).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(serviceApiList)) {
             log.info("service do not have api = {}", generate.getServiceId());
             throw new ApiException(ErrorCode.SERVICE_API_NOT_FIND);
         }
+        // 遍历API列表，对每个API进行检查
         serviceApiList.forEach(serviceApi -> {
+            // 如果API的类名或方法名为空，则记录日志并抛出异常
             if (StringUtils.isBlank(serviceApi.getClassName()) || StringUtils.isBlank(serviceApi.getClassMethod())) {
                 log.info("service not config class name or method name ={}", serviceApi.getApiId());
                 throw new CommonException(ErrorCode.SERVICE_GENERATE_NAME_EMPTY, serviceApi.getApiName());
             }
 
+            // 如果API的响应类名为空，则记录日志并抛出异常
             if (StringUtils.isBlank(serviceApi.getResultClass())) {
                 log.info("api request body name is empty={}", serviceApi.getApiName());
                 throw new CommonException(ErrorCode.SERVICE_GENERATE_RESPONSE_NAME_EMPTY, serviceApi.getApiName());
             }
 
-            Optional<ApiParamModel> optional =
-                    serviceApi.getRequestParams().stream().filter(param -> Objects.equals(param.getPosition(),
-                            Position.Body.name())).findFirst();
+            Optional<ApiParamModel> optional = serviceApi.getRequestParams().stream()
+                    .filter(param -> Objects.equals(param.getPosition(), Position.Body.name()))
+                    .findFirst();
+            // 如果存在请求参数中位置为Body且类名为空的参数，则记录日志并抛出异常。
             if (optional.isPresent() && StringUtils.isBlank(serviceApi.getBodyClass())) {
                 log.info("api request body name is empty={}", serviceApi.getApiName());
                 throw new CommonException(ErrorCode.SERVICE_GENERATE_BODY_NAME_EMPTY, serviceApi.getApiName());
             }
 
-            Optional<ApiParamModel> requestOptional =
-                    serviceApi.getRequestParams().stream().filter(param -> Objects.equals(param.getPosition(),
-                            Position.Body.name()) && StringUtils.isBlank(param.getObjectName())).findFirst();
+            // 查找请求参数中位置为Body且对象名为空的参数
+            Optional<ApiParamModel> requestOptional = serviceApi.getRequestParams().stream()
+                    .filter(param -> Objects.equals(param.getPosition(), Position.Body.name()) && StringUtils.isBlank(param.getObjectName()))
+                    .findFirst();
+            // 如果存在这样的参数，则记录日志并抛出异常
             if (requestOptional.isPresent()) {
                 ApiParamModel requestParam = requestOptional.get();
-                log.info("api request body param name is empty api={} param key = {}", serviceApi.getApiName(),
-                        requestParam.getParamKey());
+                log.info("api request body param name is empty api={} param key = {}", serviceApi.getApiName(), requestParam.getParamKey());
                 throw new CommonException(ErrorCode.SERVICE_GENERATE_BODY_PARAM_NAME_EMPTY, serviceApi.getApiName());
             }
 
-            Optional<ApiParamModel> responseOptional =
-                    serviceApi.getResponseParams().stream().filter(param -> Objects.equals(param.getPosition(),
-                            Position.Body.name()) && StringUtils.isBlank(param.getObjectName())).findFirst();
+            // 查找响应参数中位置为Body且对象名为空的参数
+            Optional<ApiParamModel> responseOptional = serviceApi.getResponseParams().stream()
+                    .filter(param -> Objects.equals(param.getPosition(), Position.Body.name()) && StringUtils.isBlank(param.getObjectName()))
+                    .findFirst();
+            // 如果存在这样的参数，则记录日志并抛出异常
             if (responseOptional.isPresent()) {
                 ApiParamModel responseParam = responseOptional.get();
-                log.info("api response body param name is empty api={} param key = {}", serviceApi.getApiName(),
-                        responseParam.getParamKey());
-                throw new CommonException(ErrorCode.SERVICE_GENERATE_RESPONSE_PARAM_NAME_EMPTY,
-                        serviceApi.getApiName());
+                log.info("api response body param name is empty api={} param key = {}", serviceApi.getApiName(), responseParam.getParamKey());
+                throw new CommonException(ErrorCode.SERVICE_GENERATE_RESPONSE_PARAM_NAME_EMPTY, serviceApi.getApiName());
             }
-
         });
     }
 

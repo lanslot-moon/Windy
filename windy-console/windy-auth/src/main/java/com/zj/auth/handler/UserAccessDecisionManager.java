@@ -28,11 +28,11 @@ public class UserAccessDecisionManager implements AccessDecisionManager {
     @Override
     public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException {
         FilterInvocation fi = (FilterInvocation) object;
-        if (permissionService.isInWhiteList(fi.getRequestUrl())){
+        if (permissionService.isInWhiteList(fi.getRequestUrl())) {
             return;
         }
 
-        if (Objects.isNull(authentication.getPrincipal())){
+        if (Objects.isNull(authentication.getPrincipal())) {
             return;
         }
 

@@ -52,5 +52,13 @@ public class GenerateDto {
    * */
   private String mavenRepository;
 
+  /**
+   * api 列表
+   */
   private List<ApiModel> apiList;
+
+  /**
+   * 构建工具路径
+   */
+  private String buildPath;
 }

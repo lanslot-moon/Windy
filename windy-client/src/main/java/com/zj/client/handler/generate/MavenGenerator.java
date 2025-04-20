@@ -179,8 +179,9 @@ public class MavenGenerator {
 
       //5 部署到远程仓库
       log.info("step5 start deploy remote repository");
-      Integer deployResult = deployRepository(projectPath, pomPath, globalEnvConfig.getMavenPath(),
-          generateDto.getMavenRepository(), line -> updateMessage(recordId, line));
+      String mavenPath = Optional.ofNullable(generateDto.getBuildPath()).orElseGet(globalEnvConfig::getMavenPath);
+      Integer deployResult = deployRepository(projectPath, pomPath, mavenPath, generateDto.getMavenRepository(),
+              line -> updateMessage(recordId, line));
       ProcessStatus status = Optional.of(deployResult).filter(res -> Objects.equals(res, SUCCESS_CODE))
           .map(res -> ProcessStatus.SUCCESS).orElse(ProcessStatus.FAIL);
       updateMessage(recordId, status,

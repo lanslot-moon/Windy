@@ -2,6 +2,7 @@ package com.zj.master.dispatch.generate;
 
 import com.zj.common.adapter.invoker.IClientInvoker;
 import com.zj.common.entity.dto.DispatchTaskModel;
+import com.zj.common.entity.pipeline.ServiceConfig;
 import com.zj.common.entity.service.ApiParamModel;
 import com.zj.common.enums.DispatchType;
 import com.zj.common.enums.LogType;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -78,6 +80,9 @@ public class GenerateDispatcher implements IDispatchExecutor {
     }).collect(Collectors.toList());
 
     MicroserviceBO service = serviceRepository.queryServiceDetail(serviceId);
+    ServiceConfig serviceConfig = service.getServiceConfig();
+    Optional.ofNullable(serviceConfig.getServiceContext()).ifPresent(context ->
+            generateParam.setBuildPath(context.getBuildVersion()));
     generateParam.setService(service.getServiceName());
     generateParam.setServiceId(serviceId);
     generateParam.setApiList(models);

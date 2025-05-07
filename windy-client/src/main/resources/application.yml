@@ -41,3 +41,6 @@ eureka:
 windy:
   client:
     version: @project.version@
+  pipeline:
+    maven:
+      path: /opt/windy-client/maven

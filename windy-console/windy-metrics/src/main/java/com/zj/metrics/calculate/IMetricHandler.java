@@ -8,10 +8,12 @@ public interface IMetricHandler {
 
     /**
      * 根据计算类型判断是否满足当前指标计算规则
+     *
+     * @param category 数据类型
      * @param calcType 计算方式
-     * @return 是否满足当前指标计算规则
+     * @return 是否匹配当前指标计算规则
      */
-    boolean matchMetric(String calcType);
+    boolean matchMetric(String category, String calcType);
 
     /**
      * 此方法完成指标体系建设

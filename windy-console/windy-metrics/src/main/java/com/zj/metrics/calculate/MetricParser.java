@@ -21,7 +21,7 @@ public class MetricParser {
 
     public Long startParse(MetricDefinitionBO metricDefinition, List<MetricSource> metricSources) {
         List<IMetricHandler> matchedHandlers = metricHandlers.stream()
-                .filter(handler -> handler.matchMetric(metricDefinition.getCalcType()))
+                .filter(handler -> handler.matchMetric(metricDefinition.getCategory(), metricDefinition.getCalcType()))
                 .collect(Collectors.toList());
 
         AtomicLong totalMetric = new AtomicLong(0);

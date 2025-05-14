@@ -128,9 +128,10 @@ public class DemandRepositoryImpl extends ServiceImpl<DemandMapper, Demand> impl
         if (CollectionUtils.isEmpty(demandIds)) {
             return Collections.emptyList();
         }
-        List<Demand> list = list(Wrappers.lambdaUpdate(Demand.class).in(Demand::getDemandId, demandIds)
-                .in(Demand::getStatus, DemandStatus.getNotHandleDemands().stream().map(DemandStatus::getType)
-                        .collect(Collectors.toList())));
+        List<Integer> notCompleteStatusList = DemandStatus.getNotHandleDemands().stream().map(DemandStatus::getType)
+                .collect(Collectors.toList());
+        List<Demand> list = list(Wrappers.lambdaQuery(Demand.class).in(Demand::getDemandId, demandIds)
+                .in(Demand::getStatus, notCompleteStatusList));
         return OrikaUtil.convertList(list, DemandBO.class);
     }
 
@@ -167,5 +168,19 @@ public class DemandRepositoryImpl extends ServiceImpl<DemandMapper, Demand> impl
         pageSize.setTotal(recordPage.getTotal());
         pageSize.setData(list);
         return pageSize;
+    }
+
+    @Override
+    public List<DemandBO> getAllDemands() {
+        return OrikaUtil.convertList(list(), DemandBO.class);
+    }
+
+    @Override
+    public List<DemandBO> getNotCompleteDemands() {
+        List<Integer> notCompleteStatusList = DemandStatus.getNotHandleDemands().stream().map(DemandStatus::getType)
+                .collect(Collectors.toList());
+        List<Demand> list = list(Wrappers.lambdaQuery(Demand.class)
+                .in(Demand::getStatus, notCompleteStatusList));
+        return OrikaUtil.convertList(list, DemandBO.class);
     }
 }

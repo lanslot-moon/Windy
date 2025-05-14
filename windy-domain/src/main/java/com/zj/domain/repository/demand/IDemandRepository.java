@@ -91,4 +91,16 @@ public interface IDemandRepository {
      * @return 是否成功
      */
     boolean batchUpdateProcessing(List<String> demandIds);
+
+    /**
+     * 查询所有的需求列表
+     * @return 返回需求列表
+     */
+    List<DemandBO> getAllDemands();
+
+    /**
+     * 获取未完成的需求列表
+     * @return 返回需求列表
+     */
+    List<DemandBO> getNotCompleteDemands();
 }

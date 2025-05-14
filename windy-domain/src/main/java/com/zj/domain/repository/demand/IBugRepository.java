@@ -98,4 +98,10 @@ public interface IBugRepository {
      * @return 是否成功
      */
     boolean batchUpdateProcessing(List<String> notCompleteBugIds);
+
+    /**
+     * 获取所有未完成的缺陷列表
+     * @return 缺陷列表
+     */
+    List<BugBO> getAllNotCompleteBugs();
 }

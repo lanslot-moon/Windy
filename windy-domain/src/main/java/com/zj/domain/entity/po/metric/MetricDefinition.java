@@ -32,11 +32,6 @@ public class MetricDefinition {
      */
     private String calcType;
 
-    /**
-     * 计算频次
-     */
-    private String calcFrequency;
-
     private Long createTime;
 
     private Long updateTime;

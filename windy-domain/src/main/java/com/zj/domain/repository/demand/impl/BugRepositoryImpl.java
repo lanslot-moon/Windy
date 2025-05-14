@@ -150,6 +150,14 @@ public class BugRepositoryImpl extends ServiceImpl<BugMapper, Bug> implements IB
     }
 
     @Override
+    public List<BugBO> getAllNotCompleteBugs() {
+        List<Integer> notCompleteStatus = BugStatus.getNotHandleBugs().stream().map(BugStatus::getType)
+                .collect(Collectors.toList());
+        List<Bug> list = list(Wrappers.lambdaQuery(Bug.class).in(Bug::getStatus, notCompleteStatus));
+        return OrikaUtil.convertList(list, BugBO.class);
+    }
+
+    @Override
     public boolean batchUpdateStatus(List<String> bugIds, int status) {
         if (CollectionUtils.isEmpty(bugIds)) {
             return false;

@@ -2,12 +2,11 @@ package com.zj.metrics.schedule;
 
 import com.zj.common.utils.TraceUtils;
 import com.zj.domain.entity.bo.metric.MetricDefinitionBO;
-import com.zj.domain.entity.po.metric.MetricSource;
+import com.zj.domain.entity.bo.metric.MetricSourceBO;
 import com.zj.domain.repository.metric.IMetricDefinitionRepository;
 import com.zj.domain.repository.metric.IMetricSourceRepository;
 import com.zj.metrics.calculate.MetricParser;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,10 +32,10 @@ public class MetricScanSchedule {
         this.metricPool = metricPool;
     }
 
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 1 * * *")
     public void scanMetrics() {
         TraceUtils.initTrace();
-        List<MetricSource> metricSources = metricSourceRepository.loadYesterdaySourceData();
+        List<MetricSourceBO> metricSources = metricSourceRepository.loadYesterdaySourceData();
         List<MetricDefinitionBO> metricDefinitions = metricDefinitionRepository.getAllMetricDefinitions();
         metricDefinitions.forEach(metricDefinition -> {
             CompletableFuture.supplyAsync(() -> metricParser.startParse(metricDefinition, metricSources), metricPool)

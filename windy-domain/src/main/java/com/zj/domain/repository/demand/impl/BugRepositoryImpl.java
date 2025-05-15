@@ -181,4 +181,10 @@ public class BugRepositoryImpl extends ServiceImpl<BugMapper, Bug> implements IB
                 .eq(BUG_STATUS_COLUM_NAME, BugStatus.NOT_HANDLE.getType());
         return baseMapper.update(null, updateWrapper) > 0;
     }
+
+    @Override
+    public List<BugBO> getAllBugs() {
+        List<Bug> list = list();
+        return OrikaUtil.convertList(list, BugBO.class);
+    }
 }

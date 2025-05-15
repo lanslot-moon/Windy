@@ -30,6 +30,11 @@ public class BugStatisticsMetric extends BaseMetric{
     }
 
     @Override
+    public String getMetricType() {
+        return "bug_statistics";
+    }
+
+    @Override
     public boolean matchMetric(String category, String calcType) {
         return Objects.equals(category, "bug") && Objects.equals(calcType, "status");
     }
@@ -47,11 +52,11 @@ public class BugStatisticsMetric extends BaseMetric{
             }
             List<BugBO> bugs = statusMap.get(status);
             double count = Optional.ofNullable(bugs).map(List::size).orElse(0);
-            return createMetricResult(bugStatus.getDesc(), metricDefinition.getMetricId(), bugStatus.getDesc(), count);
+            return createMetricResult(bugStatus.getDesc(), metricDefinition.getMetricId(), getMetricType(), count);
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
-        MetricResultBO totalMetricResult = createMetricResult("缺陷总数", metricDefinition.getMetricId(),
-                "缺陷总数", (double) allBugs.size());
+        MetricResultBO totalMetricResult = createMetricResult(MetricNameType.BUG_TOTAL.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), (double) allBugs.size());
         metricResults.add(totalMetricResult);
         boolean batchSave = batchSaveMetric(metricResults);
         log.info("batch save bug status metric result={}", batchSave);

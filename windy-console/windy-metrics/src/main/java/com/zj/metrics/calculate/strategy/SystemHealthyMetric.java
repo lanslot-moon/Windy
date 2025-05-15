@@ -34,6 +34,11 @@ public class SystemHealthyMetric extends BaseMetric {
     }
 
     @Override
+    public String getMetricType() {
+        return "system_health";
+    }
+
+    @Override
     public boolean matchMetric(String category, String calcType) {
         return Objects.equals(category, "system") && Objects.equals(calcType, "health");
     }
@@ -46,8 +51,8 @@ public class SystemHealthyMetric extends BaseMetric {
         List<DemandBO> completeDemands = allDemands.stream().filter(demandBO -> Objects.equals(demandBO.getStatus(),
                 DemandStatus.PUBLISHED.getType())).collect(Collectors.toList());
         double demandCompletePercent = completeDemands.size() * 100d / allDemands.size();
-        MetricResultBO demandPercentMetric = createMetricResult("需求完成率", metricDefinition.getMetricId(),
-                "需求完成率", demandCompletePercent);
+        MetricResultBO demandPercentMetric = createMetricResult(MetricNameType.DEMAND_COMPLETE_PERCENT.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), demandCompletePercent);
 
         //计算缺陷修复率
         List<BugBO> allBugs = bugRepository.getAllBugs();
@@ -55,8 +60,8 @@ public class SystemHealthyMetric extends BaseMetric {
                 .filter(bugBO -> Objects.equals(bugBO.getStatus(), BugStatus.PUBLISHED.getType()))
                 .collect(Collectors.toList());
         double bugCompletePercent = completeBugs.size() * 100d / allBugs.size();
-        MetricResultBO bugPercentMetric = createMetricResult("缺陷完成率", metricDefinition.getMetricId(),
-                "缺陷完成率", bugCompletePercent);
+        MetricResultBO bugPercentMetric = createMetricResult(MetricNameType.BUG_COMPLETE_PERCENT.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), bugCompletePercent);
 
         //计算需求逾期率
         List<DemandBO> overdueDemands = allDemands.stream().filter(demandBO ->
@@ -64,12 +69,12 @@ public class SystemHealthyMetric extends BaseMetric {
                 && System.currentTimeMillis() > demandBO.getExpectTime())
                 .collect(Collectors.toList());
         double overduePercent = overdueDemands.size() * 100d / allDemands.size();
-        MetricResultBO overduePercentMetric = createMetricResult("需求逾期率", metricDefinition.getMetricId(),
-                "需求逾期率", overduePercent);
+        MetricResultBO overduePercentMetric = createMetricResult(MetricNameType.DEMAND_OVERDUE_PERCENT.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), overduePercent);
 
         double healthPercent = calculateHealthy(demandCompletePercent, bugCompletePercent, overduePercent);
-        MetricResultBO healthMetric = createMetricResult("健康度总分", metricDefinition.getMetricId(),
-                "健康度总分", healthPercent);
+        MetricResultBO healthMetric = createMetricResult(MetricNameType.SYSTEM_HEALTH.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), healthPercent);
 
         List<MetricResultBO> list = Arrays.asList(demandPercentMetric, bugPercentMetric, overduePercentMetric, healthMetric);
         batchSaveMetric(list);

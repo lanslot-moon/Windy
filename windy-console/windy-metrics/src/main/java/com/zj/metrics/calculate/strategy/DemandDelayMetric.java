@@ -30,6 +30,11 @@ public class DemandDelayMetric extends BaseMetric {
     }
 
     @Override
+    public String getMetricType() {
+        return "demand_delay";
+    }
+
+    @Override
     public boolean matchMetric(String category, String calcType) {
         return Objects.equals(category, "demand") && Objects.equals(calcType, "delay");
     }
@@ -48,8 +53,10 @@ public class DemandDelayMetric extends BaseMetric {
             double currentDelay = delayPeriod.addAndGet(round1(delayTime/ dayPeriod));
             log.info("current demand period={} delay period={}", currentPeriod, currentDelay);
         });
-        MetricResultBO workMetricResult = createMetricResult("需求工时", metricDefinition.getMetricId(), "", (double) demandPeriod.get());
-        MetricResultBO delayMetricResult = createMetricResult("需求搁置时长", metricDefinition.getMetricId(), "", (double) delayPeriod.get());
+        MetricResultBO workMetricResult = createMetricResult(MetricNameType.DEMAND_WORKLOAD.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), demandPeriod.get());
+        MetricResultBO delayMetricResult = createMetricResult(MetricNameType.DEMAND_WAIT_TIME.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), delayPeriod.get());
         List<MetricResultBO> metricResultList = Arrays.asList(workMetricResult, delayMetricResult);
         boolean batchSaveResult = batchSaveMetric(metricResultList);
         log.info("batch save demand delay metric result={}", batchSaveResult);

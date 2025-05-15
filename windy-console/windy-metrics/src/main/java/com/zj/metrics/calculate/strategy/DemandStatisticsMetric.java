@@ -31,6 +31,11 @@ public class DemandStatisticsMetric extends BaseMetric{
     }
 
     @Override
+    public String getMetricType() {
+        return "demand_statistics";
+    }
+
+    @Override
     public boolean matchMetric(String category, String calcType) {
         return Objects.equals(category, "demand") && Objects.equals(calcType, "top");
     }
@@ -45,10 +50,11 @@ public class DemandStatisticsMetric extends BaseMetric{
         List<MetricResultBO> metricResultList= splitDemands.keySet().stream().map(customerValue -> {
             String metricId = metricDefinition.getMetricId();
             List<DemandBO> demandBOS = splitDemands.get(customerValue);
-            MetricResultBO countMetric = createMetricResult("需求个数", metricId, customerValue, (double) demandBOS.size());
-
+            MetricResultBO countMetric = createMetricResult(MetricNameType.DEMAND_CATEGORY_COUNT.getMetricName(),
+                    metricId, getMetricType(), (double) demandBOS.size(), customerValue);
             double count = demandBOS.stream().mapToInt(DemandBO::getWorkload).sum();
-            MetricResultBO workloadMetric = createMetricResult("需求工时",metricId, customerValue, count);
+            MetricResultBO workloadMetric = createMetricResult(MetricNameType.DEMAND_CATEGORY_WORKLOAD.getMetricName(),
+                    metricId, getMetricType(), count, customerValue);
             return Arrays.asList(countMetric, workloadMetric);
         }).flatMap(Collection::stream).collect(Collectors.toList());
 

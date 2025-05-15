@@ -30,6 +30,11 @@ public class DemandStatusMetric extends BaseMetric {
     }
 
     @Override
+    public String getMetricType() {
+        return "demand_status";
+    }
+
+    @Override
     public boolean matchMetric(String category, String calcType) {
         return Objects.equals(category, "demand") && Objects.equals(calcType, "top_status");
     }
@@ -48,7 +53,7 @@ public class DemandStatusMetric extends BaseMetric {
             List<DemandBO> demands = statusMap.get(status);
             double percent =Optional.of(demands).filter(CollectionUtils::isNotEmpty)
                     .map(list -> (list.size() * 100d) / allDemands.size()).orElse(0d);
-            return createMetricResult(demandStatus.getDesc(), metricDefinition.getMetricId(), demandStatus.getDesc(), percent);
+            return createMetricResult(demandStatus.getDesc(), metricDefinition.getMetricId(), getMetricType(), percent);
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         boolean batchSave = batchSaveMetric(metricResults);

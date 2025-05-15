@@ -31,6 +31,11 @@ public class MetricResultBO {
     private String resultName;
 
     /**
+     * 计算结果类型
+     */
+    private String resultType;
+
+    /**
      * 标签计算结果的类型区分
      */
     private String tag;

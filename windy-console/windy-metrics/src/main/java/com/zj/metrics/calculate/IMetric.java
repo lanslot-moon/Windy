@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface IMetric {
 
+    String getMetricType();
+
     /**
      * 根据计算类型判断是否满足当前指标计算规则
      *

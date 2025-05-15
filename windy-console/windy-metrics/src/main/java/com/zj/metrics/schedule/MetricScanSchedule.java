@@ -32,7 +32,7 @@ public class MetricScanSchedule {
         this.metricPool = metricPool;
     }
 
-    @Scheduled(cron = "0 1 * * *")
+    @Scheduled(cron = "0 0 1 * * *")
     public void scanMetrics() {
         TraceUtils.initTrace();
         List<MetricSourceBO> metricSources = metricSourceRepository.loadYesterdaySourceData();

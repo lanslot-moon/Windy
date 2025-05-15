@@ -1,14 +1,13 @@
 package com.zj.metrics.calculate.strategy;
 
-import com.alibaba.fastjson2.JSON;
 import com.zj.common.adapter.uuid.UniqueIdService;
 import com.zj.domain.entity.bo.demand.DemandBO;
 import com.zj.domain.entity.bo.metric.MetricDefinitionBO;
 import com.zj.domain.entity.bo.metric.MetricResultBO;
 import com.zj.domain.entity.bo.metric.MetricSourceBO;
+import com.zj.domain.repository.demand.IDemandRepository;
 import com.zj.domain.repository.metric.IMetricResultRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +21,13 @@ import java.util.stream.Collectors;
 @Component
 public class DemandStatisticsMetric extends BaseMetric{
 
-    public DemandStatisticsMetric(IMetricResultRepository metricResultRepository, UniqueIdService uniqueIdService) {
+    private final IDemandRepository demandRepository;
+
+    public DemandStatisticsMetric(IMetricResultRepository metricResultRepository, UniqueIdService uniqueIdService,
+                                  IDemandRepository demandRepository) {
         super(uniqueIdService, metricResultRepository);
 
+        this.demandRepository = demandRepository;
     }
 
     @Override
@@ -34,17 +37,8 @@ public class DemandStatisticsMetric extends BaseMetric{
 
     @Override
     public Integer calculateMetric(MetricDefinitionBO metricDefinition, List<MetricSourceBO> metricSources) {
-        List<MetricSourceBO> filterMetricSources = metricSources.stream()
-                .filter(metricSource -> Objects.equals(metricDefinition.getCategory(), metricSource.getDataType()))
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(filterMetricSources)) {
-            log.info("filter metric source data is empty, not calculate category={} calcType={}",
-                    metricDefinition.getCategory(), metricDefinition.getCalcType());
-            return 0;
-        }
-
-        Map<String, List<DemandBO>> splitDemands = filterMetricSources.stream()
-                .map(metricSource -> JSON.parseObject(metricSource.getRawJson(), DemandBO.class))
+        List<DemandBO> allDemands = demandRepository.getAllDemands();
+        Map<String, List<DemandBO>> splitDemands = allDemands.stream()
                 .filter(Objects::nonNull).filter(demandBO -> StringUtils.isNotBlank(demandBO.getCustomerValue()))
                 .collect(Collectors.groupingBy(DemandBO::getCustomerValue));
 

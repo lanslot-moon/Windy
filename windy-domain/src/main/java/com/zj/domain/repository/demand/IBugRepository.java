@@ -104,4 +104,10 @@ public interface IBugRepository {
      * @return 缺陷列表
      */
     List<BugBO> getAllNotCompleteBugs();
+
+    /**
+     * 获取所有的缺陷列表
+     * @return 缺陷列表
+     */
+    List<BugBO> getAllBugs();
 }

@@ -9,6 +9,7 @@ import com.zj.domain.entity.bo.metric.MetricSourceBO;
 import com.zj.domain.repository.demand.IDemandRepository;
 import com.zj.domain.repository.metric.IMetricResultRepository;
 import com.zj.metrics.utils.MetricUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,6 @@ public class DemandDelayMetric extends BaseMetric {
     @Override
     public Integer calculateMetric(MetricDefinitionBO metricDefinition, List<MetricSourceBO> metricSources) {
         List<DemandBO> notCompleteDemands = demandRepository.getNotCompleteDemands();
-
         double dayPeriod = 1000 * 60 * 60 * 24d;
         AtomicDouble demandPeriod = new AtomicDouble(0);
         AtomicDouble delayPeriod = new AtomicDouble(0);

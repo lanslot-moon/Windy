@@ -80,9 +80,9 @@ public class MetricsService {
         return new HealthyMetricDto(metricResultBO.getValue().intValue());
     }
 
-    public List<DemandDelayWorkloadDto> getDemandWorkload() {
-        long startTime = new DateTime().minusDays(7).getMillis();
-        List<MetricResultBO> metricResultList = metricResultRepository.getDemandDelayWorkLoadByTag("demand_delay", startTime);
+    public List<DemandDelayWorkloadDto> getDemandWorkload(Long startTime) {
+        List<MetricResultBO> metricResultList = metricResultRepository.getDemandDelayWorkLoadByTag("demand_delay",
+                startTime);
         return metricResultList.stream().map(metricResultBO -> {
             DemandDelayWorkloadDto delayWorkloadDto = new DemandDelayWorkloadDto();
             delayWorkloadDto.setMetricName(metricResultBO.getResultName());
@@ -92,8 +92,7 @@ public class MetricsService {
         }).collect(Collectors.toList());
     }
 
-    public List<BugStatusStatisticsDto> getBugStatusStatistics() {
-        long startTime = new DateTime().minusDays(7).getMillis();
+    public List<BugStatusStatisticsDto> getBugStatusStatistics(Long startTime) {
         List<MetricResultBO> metricResultList = metricResultRepository.getDemandDelayWorkLoadByTag("bug_statistics", startTime);
         return metricResultList.stream().map(metricResultBO -> {
             BugStatusStatisticsDto statusStatisticsDto = new BugStatusStatisticsDto();
@@ -105,8 +104,7 @@ public class MetricsService {
     }
 
 
-    public List<HealthyStatisticsDto> getSystemHealthyStatistics() {
-        long startTime = new DateTime().minusDays(7).getMillis();
+    public List<HealthyStatisticsDto> getSystemHealthyStatistics(Long startTime) {
         List<MetricResultBO> metricResultList = metricResultRepository.getDemandDelayWorkLoadByTag("system_health", startTime);
         return metricResultList.stream().map(metricResultBO -> {
             HealthyStatisticsDto healthyStatisticsDto = new HealthyStatisticsDto();

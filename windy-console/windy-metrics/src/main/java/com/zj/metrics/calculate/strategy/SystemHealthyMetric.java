@@ -13,6 +13,7 @@ import com.zj.domain.repository.demand.IDemandRepository;
 import com.zj.domain.repository.metric.IMetricResultRepository;
 import com.zj.metrics.utils.MetricUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -47,8 +48,12 @@ public class SystemHealthyMetric extends BaseMetric {
     @Override
     public Integer calculateMetric(MetricDefinitionBO metricDefinition, List<MetricSourceBO> metricSources) {
         log.info("start calculate system health metric");
-        //计算需求完成率
         List<DemandBO> allDemands = demandRepository.getAllDemands();
+        if (CollectionUtils.isEmpty(allDemands)) {
+            log.info("demand list is empty, not calculate");
+            return 0;
+        }
+        //计算需求完成率
         List<DemandBO> completeDemands = allDemands.stream().filter(demandBO -> Objects.equals(demandBO.getStatus(),
                 DemandStatus.PUBLISHED.getType())).collect(Collectors.toList());
         double demandCompletePercent = MetricUtils.scaleTo1Decimal(completeDemands.size() * 100d / allDemands.size());

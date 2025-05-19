@@ -10,6 +10,7 @@ import com.zj.domain.repository.demand.IBugRepository;
 import com.zj.domain.repository.metric.IMetricResultRepository;
 import com.zj.metrics.utils.MetricUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -42,9 +43,14 @@ public class BugStatisticsMetric extends BaseMetric{
 
     @Override
     public Integer calculateMetric(MetricDefinitionBO metricDefinition, List<MetricSourceBO> metricSources) {
+        log.info("start calculate bus statistics");
         List<BugBO> allBugs = bugRepository.getAllNotCompleteBugs();
-        Map<Integer, List<BugBO>> statusMap = allBugs.stream().collect(Collectors.groupingBy(BugBO::getStatus));
+        if (CollectionUtils.isEmpty(allBugs)) {
+            log.info("bug list is empty, not calculate");
+            return 0;
+        }
 
+        Map<Integer, List<BugBO>> statusMap = allBugs.stream().collect(Collectors.groupingBy(BugBO::getStatus));
         List<MetricResultBO> metricResults = statusMap.keySet().stream().map(status -> {
             BugStatus bugStatus = BugStatus.convertType(status);
             if (Objects.isNull(bugStatus)) {

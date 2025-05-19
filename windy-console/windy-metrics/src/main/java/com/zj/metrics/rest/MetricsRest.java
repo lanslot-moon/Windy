@@ -6,6 +6,7 @@ import com.zj.metrics.entity.*;
 import com.zj.metrics.service.MetricsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class MetricsRest {
     }
 
     @GetMapping("/demand/status/statistics")
-    public ResponseMeta<List<DemandStatusStatisticsDto>> getDemandStatusStatistics(){
+    public ResponseMeta<List<DemandStatusStatisticsDto>> getDemandStatusStatistics() {
         return new ResponseMeta<>(ErrorCode.SUCCESS, metricsService.getDemandStatusStatistics());
     }
 
@@ -36,17 +37,17 @@ public class MetricsRest {
     }
 
     @GetMapping("/demand/workload")
-    public ResponseMeta<List<DemandDelayWorkloadDto>> getDemandWorkload() {
-        return new ResponseMeta<>(ErrorCode.SUCCESS, metricsService.getDemandWorkload());
+    public ResponseMeta<List<DemandDelayWorkloadDto>> getDemandWorkload(@RequestParam("startTime") Long startTime) {
+        return new ResponseMeta<>(ErrorCode.SUCCESS, metricsService.getDemandWorkload(startTime));
     }
 
     @GetMapping("/bug/statistics")
-    public ResponseMeta<List<BugStatusStatisticsDto>> getBugStatusStatistics() {
-        return new ResponseMeta<>(ErrorCode.SUCCESS, metricsService.getBugStatusStatistics());
+    public ResponseMeta<List<BugStatusStatisticsDto>> getBugStatusStatistics(@RequestParam("startTime") Long startTime) {
+        return new ResponseMeta<>(ErrorCode.SUCCESS, metricsService.getBugStatusStatistics(startTime));
     }
 
     @GetMapping("/healthy/statistics")
-    public ResponseMeta<List<HealthyStatisticsDto>> getSystemHealthyStatistics() {
-        return new ResponseMeta<>(ErrorCode.SUCCESS, metricsService.getSystemHealthyStatistics());
+    public ResponseMeta<List<HealthyStatisticsDto>> getSystemHealthyStatistics(@RequestParam("startTime") Long startTime) {
+        return new ResponseMeta<>(ErrorCode.SUCCESS, metricsService.getSystemHealthyStatistics(startTime));
     }
 }

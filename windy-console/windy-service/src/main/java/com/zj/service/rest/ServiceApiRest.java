@@ -7,10 +7,7 @@ import com.zj.domain.entity.bo.service.ServiceApiBO;
 import com.zj.domain.entity.bo.service.ServiceGenerateBO;
 import com.zj.domain.entity.vo.Create;
 import com.zj.domain.entity.vo.Update;
-import com.zj.service.entity.ApiModel;
-import com.zj.service.entity.ExecuteTemplateDto;
-import com.zj.service.entity.GenerateTemplate;
-import com.zj.service.entity.ImportApiResult;
+import com.zj.service.entity.*;
 import com.zj.service.service.ApiService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -77,8 +74,8 @@ public class ServiceApiRest {
   }
 
   @PostMapping("/service/resources/generate")
-  public ResponseMeta<Boolean> generateServiceApi(@RequestBody ServiceGenerateBO generate) {
-    return new ResponseMeta<>(ErrorCode.SUCCESS, apiService.generateServiceApi(generate));
+  public ResponseMeta<Boolean> generateServiceApi(@RequestBody GenerateParams generateParams) {
+    return new ResponseMeta<>(ErrorCode.SUCCESS, apiService.generateServiceApi(generateParams));
   }
 
   @GetMapping("/service/{serviceId}/generate")

@@ -26,11 +26,7 @@ import com.zj.domain.repository.service.IServiceApiRepository;
 import com.zj.plugin.loader.InitData;
 import com.zj.plugin.loader.ParamValueType;
 import com.zj.plugin.loader.ParameterDefine;
-import com.zj.service.entity.ApiModel;
-import com.zj.service.entity.ApiRequestVariable;
-import com.zj.service.entity.ExecuteTemplateDto;
-import com.zj.service.entity.GenerateTemplate;
-import com.zj.service.entity.ImportApiResult;
+import com.zj.service.entity.*;
 import com.zj.service.service.imports.ApiImportFactory;
 import com.zj.service.service.imports.IApiImportStrategy;
 import lombok.extern.slf4j.Slf4j;
@@ -117,19 +113,26 @@ public class ApiService {
         return apiRepository.batchDeleteApi(apiIds);
     }
 
-    public Boolean generateServiceApi(ServiceGenerateBO generate) {
+    public Boolean generateServiceApi(GenerateParams generate) {
         checkMavenConfig();
         checkVersionExist(generate.getServiceId(), generate.getVersion());
-        saveOrUpdateParams(generate);
         checkGenerateClassName(generate);
+        saveOrUpdateParams(generate);
+
         DispatchTaskModel dispatchTaskModel = new DispatchTaskModel();
         dispatchTaskModel.setSourceId(generate.getServiceId());
+        String apiIdsString = String.join(",", generate.getApiIds());
+        dispatchTaskModel.setTriggerId(apiIdsString);
+        dispatchTaskModel.setSourceName("generate service=[] package");
         dispatchTaskModel.setType(LogType.GENERATE.getType());
         return masterInvoker.runGenerateTask(dispatchTaskModel);
     }
 
-    private void checkGenerateClassName(ServiceGenerateBO generate) {
-        List<ServiceApiBO> serviceApiList = apiRepository.getApiByService(generate.getServiceId())
+    /**
+     * 检查构建的API是否都已经定义好类型和方法名
+     */
+    private void checkGenerateClassName(GenerateParams generate) {
+        List<ServiceApiBO> serviceApiList = apiRepository.getServiceApiList(generate.getApiIds())
                 .stream().filter(ServiceApiBO::isApi).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(serviceApiList)) {
             log.info("service do not have api = {}", generate.getServiceId());
@@ -174,10 +177,14 @@ public class ApiService {
                 throw new CommonException(ErrorCode.SERVICE_GENERATE_RESPONSE_PARAM_NAME_EMPTY,
                         serviceApi.getApiName());
             }
-
         });
     }
 
+    /**
+     * 检查当前服务历史否构建过指定的版本号
+     * @param serviceId 服务ID
+     * @param version 当前构建的版本号
+     */
     private void checkVersionExist(String serviceId, String version) {
         List<GenerateRecordBO> generateRecords = generateRecordRepository.getGenerateRecord(serviceId, version);
         if (CollectionUtils.isNotEmpty(generateRecords)) {
@@ -186,6 +193,9 @@ public class ApiService {
         }
     }
 
+    /**
+     * 检查系统是否存在maven配置
+     */
     private void checkMavenConfig() {
         GenerateMavenConfigDto mavenConfig = systemConfigRepository.getMavenConfig();
         if (Objects.isNull(mavenConfig) || !mavenConfig.checkConfig()) {
@@ -193,13 +203,18 @@ public class ApiService {
         }
     }
 
-    private void saveOrUpdateParams(ServiceGenerateBO generate) {
-        ServiceGenerateBO serviceGenerateBO = generateRepository.getByService(generate.getServiceId());
+    private void saveOrUpdateParams(GenerateParams generateParams) {
+        ServiceGenerateBO serviceGenerateBO = generateRepository.getByService(generateParams.getServiceId());
         if (Objects.isNull(serviceGenerateBO)) {
-            generate.setGenerateId(uniqueIdService.getUniqueId());
-            generateRepository.create(generate);
+            ServiceGenerateBO generateBO = OrikaUtil.convert(generateParams, ServiceGenerateBO.class);
+            generateBO.setGenerateId(uniqueIdService.getUniqueId());
+            generateRepository.create(generateBO);
         } else {
-            generateRepository.update(generate);
+            serviceGenerateBO.setArtifactId(generateParams.getArtifactId());
+            serviceGenerateBO.setVersion(generateParams.getVersion());
+            serviceGenerateBO.setGroupId(generateParams.getGroupId());
+            serviceGenerateBO.setPackageName(generateParams.getPackageName());
+            generateRepository.update(serviceGenerateBO);
         }
     }
 

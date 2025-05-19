@@ -1248,7 +1248,58 @@ CREATE TABLE `work_task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+DROP TABLE IF EXISTS `metric_alert_rule`;
 
+CREATE TABLE `metric_alert_rule` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `rule_id` varchar(64) DEFAULT NULL COMMENT '规则ID',
+  `metric_id` varchar(64) DEFAULT NULL COMMENT '关联指标ID',
+  `condition` varchar(100) DEFAULT NULL COMMENT '触发条件',
+  `notify_channel` int(11) DEFAULT NULL COMMENT '通知方式',
+  `notify_template` varchar(200) DEFAULT NULL COMMENT '通知模版方式',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
+  `update_time` bigint(20) DEFAULT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `metric_definition`;
+
+CREATE TABLE `metric_definition` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `metric_id` varchar(64) DEFAULT NULL COMMENT '指标ID',
+  `metric_name` varchar(100) DEFAULT NULL COMMENT '指标名称',
+  `category` varchar(50) DEFAULT NULL COMMENT '指标分类',
+  `calc_type` varchar(100) DEFAULT NULL COMMENT '计算方式',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
+  `update_time` bigint(20) DEFAULT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `metric_result`;
+
+CREATE TABLE `metric_result` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `metric_id` varchar(64) NOT NULL COMMENT '指标ID',
+  `value` double DEFAULT NULL COMMENT '统计值',
+  `dimension` int(11) DEFAULT NULL COMMENT '统计维度: 1个人 2团队',
+  `related_id` varchar(64) DEFAULT NULL COMMENT '关联ID：用户ID或者团队ID',
+  `tag` varchar(40) DEFAULT NULL COMMENT '标签计算结果的类型区分',
+  `result_name` varchar(50) DEFAULT NULL COMMENT '计算结果的名称，用于表示计算的结果类型',
+  `result_type` varchar(30) DEFAULT NULL,
+  `create_time` bigint(20) DEFAULT NULL COMMENT '统计时间点',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `metric_source_data`;
+CREATE TABLE `metric_source_data` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `source_system` varchar(50) DEFAULT NULL COMMENT '数据来源系统',
+  `data_type` varchar(50) DEFAULT NULL COMMENT '数据类型（需求/代码/缺陷）',
+  `raw_json` text COMMENT '原始数据（完整Payload）',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

@@ -8,6 +8,7 @@ import com.zj.domain.entity.bo.metric.MetricSourceBO;
 import com.zj.domain.entity.enums.BugStatus;
 import com.zj.domain.repository.demand.IBugRepository;
 import com.zj.domain.repository.metric.IMetricResultRepository;
+import com.zj.metrics.utils.MetricUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +53,8 @@ public class BugStatisticsMetric extends BaseMetric{
             }
             List<BugBO> bugs = statusMap.get(status);
             double count = Optional.ofNullable(bugs).map(List::size).orElse(0);
-            return createMetricResult(bugStatus.getDesc(), metricDefinition.getMetricId(), getMetricType(), count);
+            return createMetricResult(bugStatus.getDesc(), metricDefinition.getMetricId(), getMetricType(),
+                    MetricUtils.scaleTo1Decimal(count));
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         MetricResultBO totalMetricResult = createMetricResult(MetricNameType.BUG_TOTAL.getMetricName(),

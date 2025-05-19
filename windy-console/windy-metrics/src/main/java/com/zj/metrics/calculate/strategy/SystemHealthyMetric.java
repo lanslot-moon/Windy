@@ -11,6 +11,7 @@ import com.zj.domain.entity.enums.DemandStatus;
 import com.zj.domain.repository.demand.IBugRepository;
 import com.zj.domain.repository.demand.IDemandRepository;
 import com.zj.domain.repository.metric.IMetricResultRepository;
+import com.zj.metrics.utils.MetricUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +51,7 @@ public class SystemHealthyMetric extends BaseMetric {
         List<DemandBO> allDemands = demandRepository.getAllDemands();
         List<DemandBO> completeDemands = allDemands.stream().filter(demandBO -> Objects.equals(demandBO.getStatus(),
                 DemandStatus.PUBLISHED.getType())).collect(Collectors.toList());
-        double demandCompletePercent = completeDemands.size() * 100d / allDemands.size();
+        double demandCompletePercent = MetricUtils.scaleTo1Decimal(completeDemands.size() * 100d / allDemands.size());
         MetricResultBO demandPercentMetric = createMetricResult(MetricNameType.DEMAND_COMPLETE_PERCENT.getMetricName(),
                 metricDefinition.getMetricId(), getMetricType(), demandCompletePercent);
 
@@ -59,7 +60,7 @@ public class SystemHealthyMetric extends BaseMetric {
         List<BugBO> completeBugs = allBugs.stream()
                 .filter(bugBO -> Objects.equals(bugBO.getStatus(), BugStatus.PUBLISHED.getType()))
                 .collect(Collectors.toList());
-        double bugCompletePercent = completeBugs.size() * 100d / allBugs.size();
+        double bugCompletePercent = MetricUtils.scaleTo1Decimal(completeBugs.size() * 100d / allBugs.size());
         MetricResultBO bugPercentMetric = createMetricResult(MetricNameType.BUG_COMPLETE_PERCENT.getMetricName(),
                 metricDefinition.getMetricId(), getMetricType(), bugCompletePercent);
 
@@ -68,7 +69,7 @@ public class SystemHealthyMetric extends BaseMetric {
                 !Objects.equals(demandBO.getStatus(), DemandStatus.PUBLISHED.getType())
                 && System.currentTimeMillis() > demandBO.getExpectTime())
                 .collect(Collectors.toList());
-        double overduePercent = overdueDemands.size() * 100d / allDemands.size();
+        double overduePercent = MetricUtils.scaleTo1Decimal(overdueDemands.size() * 100d / allDemands.size());
         MetricResultBO overduePercentMetric = createMetricResult(MetricNameType.DEMAND_OVERDUE_PERCENT.getMetricName(),
                 metricDefinition.getMetricId(), getMetricType(), overduePercent);
 

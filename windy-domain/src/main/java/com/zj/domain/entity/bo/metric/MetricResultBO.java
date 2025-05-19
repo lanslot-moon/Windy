@@ -36,7 +36,7 @@ public class MetricResultBO {
     private String resultType;
 
     /**
-     * 标签计算结果的类型区分
+     * 用于区分不同的标签计算结果
      */
     private String tag;
 

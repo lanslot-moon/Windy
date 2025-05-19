@@ -1,5 +1,6 @@
 package com.zj.domain.repository.metric.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zj.common.utils.OrikaUtil;
 import com.zj.domain.entity.bo.metric.MetricResultBO;
@@ -14,15 +15,22 @@ import java.util.List;
 public class MetricResultRepositoryImpl extends ServiceImpl<MetricResultMapper, MetricResult> implements IMetricResultRepository {
 
     @Override
-    public boolean saveResult(MetricResultBO metricResult) {
-        MetricResult result = OrikaUtil.convert(metricResult, MetricResult.class);
-        result.setCreateTime(System.currentTimeMillis());
-        return save(result);
-    }
-
-    @Override
     public boolean batchSaveResult(List<MetricResultBO> metricResultList) {
         List<MetricResult> metricResults = OrikaUtil.convertList(metricResultList, MetricResult.class);
         return saveBatch(metricResults);
+    }
+
+    @Override
+    public MetricResultBO getLatestMetricByType(String tag, String resultName) {
+        MetricResult metricResult = getOne(Wrappers.lambdaQuery(MetricResult.class).eq(MetricResult::getTag, tag)
+                .eq(MetricResult::getResultName, resultName).orderByDesc(MetricResult::getCreateTime)
+                .last("limit 1"));
+        return OrikaUtil.convert(metricResult, MetricResultBO.class);
+    }
+
+    @Override
+    public List<MetricResultBO> getDemandDelayWorkLoadByTag(String tag, long startTime) {
+        List<MetricResult> metricResults = list(Wrappers.lambdaQuery(MetricResult.class).eq(MetricResult::getTag, tag).ge(MetricResult::getCreateTime, startTime));
+        return OrikaUtil.convertList(metricResults, MetricResultBO.class);
     }
 }

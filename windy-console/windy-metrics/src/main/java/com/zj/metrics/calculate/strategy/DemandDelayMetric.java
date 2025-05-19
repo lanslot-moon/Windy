@@ -8,6 +8,7 @@ import com.zj.domain.entity.bo.metric.MetricResultBO;
 import com.zj.domain.entity.bo.metric.MetricSourceBO;
 import com.zj.domain.repository.demand.IDemandRepository;
 import com.zj.domain.repository.metric.IMetricResultRepository;
+import com.zj.metrics.utils.MetricUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -42,28 +43,31 @@ public class DemandDelayMetric extends BaseMetric {
     @Override
     public Integer calculateMetric(MetricDefinitionBO metricDefinition, List<MetricSourceBO> metricSources) {
         List<DemandBO> notCompleteDemands = demandRepository.getNotCompleteDemands();
+
+        double dayPeriod = 1000 * 60 * 60 * 24d;
         AtomicDouble demandPeriod = new AtomicDouble(0);
         AtomicDouble delayPeriod = new AtomicDouble(0);
-        double dayPeriod = 1000 * 60 * 60 * 24d;
         notCompleteDemands.forEach(demandBO -> {
             long workTime = System.currentTimeMillis() - demandBO.getCreateTime();
             long demandStartTime = Optional.ofNullable(demandBO.getStartTime()).orElse(System.currentTimeMillis());
             long delayTime = demandStartTime - demandBO.getCreateTime();
-            double currentPeriod = demandPeriod.addAndGet(round1(workTime/ dayPeriod));
-            double currentDelay = delayPeriod.addAndGet(round1(delayTime/ dayPeriod));
+            Double currentPeriod = demandPeriod.addAndGet(workTime / dayPeriod);
+            Double currentDelay = delayPeriod.addAndGet(delayTime / dayPeriod);
             log.info("current demand period={} delay period={}", currentPeriod, currentDelay);
         });
-        MetricResultBO workMetricResult = createMetricResult(MetricNameType.DEMAND_WORKLOAD.getMetricName(),
-                metricDefinition.getMetricId(), getMetricType(), demandPeriod.get());
-        MetricResultBO delayMetricResult = createMetricResult(MetricNameType.DEMAND_WAIT_TIME.getMetricName(),
-                metricDefinition.getMetricId(), getMetricType(), delayPeriod.get());
-        List<MetricResultBO> metricResultList = Arrays.asList(workMetricResult, delayMetricResult);
+
+
+        List<MetricResultBO> metricResultList = convertResult(metricDefinition, demandPeriod, delayPeriod);
         boolean batchSaveResult = batchSaveMetric(metricResultList);
         log.info("batch save demand delay metric result={}", batchSaveResult);
         return metricResultList.size();
     }
 
-    private static double round1(double val) {
-        return Math.round(val * 10) / 10.0;
+    private List<MetricResultBO> convertResult(MetricDefinitionBO metricDefinition, AtomicDouble demandPeriod, AtomicDouble delayPeriod) {
+        MetricResultBO workMetricResult = createMetricResult(MetricNameType.DEMAND_WORKLOAD.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), MetricUtils.scaleTo1Decimal(demandPeriod.get()));
+        MetricResultBO delayMetricResult = createMetricResult(MetricNameType.DEMAND_WAIT_TIME.getMetricName(),
+                metricDefinition.getMetricId(), getMetricType(), MetricUtils.scaleTo1Decimal(delayPeriod.get()));
+        return Arrays.asList(workMetricResult, delayMetricResult);
     }
 }

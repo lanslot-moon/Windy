@@ -38,4 +38,5 @@ public abstract class BaseMetric implements IMetric {
     public boolean batchSaveMetric(List<MetricResultBO> metricResultList) {
         return metricResultRepository.batchSaveResult(metricResultList);
     }
+
 }

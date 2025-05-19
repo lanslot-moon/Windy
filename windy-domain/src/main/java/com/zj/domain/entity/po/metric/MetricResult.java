@@ -27,12 +27,10 @@ public class MetricResult {
      */
     private Double value;
 
-
     /**
      * 计算结果的名称，用于表示计算的结果类型
      */
     private String resultName;
-
 
     /**
      * 计算结果类型
@@ -40,7 +38,7 @@ public class MetricResult {
     private String resultType;
 
     /**
-     * 标签计算结果的类型区分
+     * 用于区分不同的标签计算结果
      */
     private String tag;
 

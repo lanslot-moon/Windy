@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface IMetricResultRepository {
 
-    boolean saveResult(MetricResultBO metricResult);
-
     boolean batchSaveResult(List<MetricResultBO> metricResultList);
+
+    MetricResultBO getLatestMetricByType(String tag, String resultName);
+
+    List<MetricResultBO> getDemandDelayWorkLoadByTag(String demandDelay, long startTime);
 }

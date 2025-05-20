@@ -71,7 +71,7 @@ public class GenerateDispatcher implements IDispatchExecutor {
     generateParam.setMavenRepository(mavenConfig.getMavenUrl());
     generateParam.setServiceId(serviceId);
 
-    List<String> apiIdList = Arrays.asList(task.getSourceId().split(","));
+    List<String> apiIdList = Arrays.asList(task.getTriggerId().split(","));
     List<ServiceApiBO> apiList = serviceApiRepository.getServiceApiList(apiIdList);
     if (CollectionUtils.isEmpty(apiList)) {
       return false;

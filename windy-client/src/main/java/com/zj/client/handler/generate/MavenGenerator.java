@@ -146,7 +146,7 @@ public class MavenGenerator {
               + generateDto.getService();
       boolean result = createProjectDir(projectPath);
       if (!result) {
-        updateMessage(recordId, ProcessStatus.FAIL, "create project dir error");
+        updateMessage(recordId, ProcessStatus.FAIL, "init project dir error");
         return;
       }
 
@@ -216,10 +216,11 @@ public class MavenGenerator {
     InvocationRequest ideaRequest = new DefaultInvocationRequest();
     ideaRequest.setBaseDirectory(new File(pomPath));
     ideaRequest.setAlsoMakeDependents(true);
-    ideaRequest.setGoals(
-        Arrays.asList("-U", "clean", "deploy", "-T 1C", "-Dmaven.compile.fork=true",
+    String targetFilePath = projectPath + File.separator + SETTING_XML;
+    ideaRequest.setGoals(Arrays.asList(
+            "-U", "clean", "deploy",
             "-Dmaven.test.skip=true", "-Dmaven.install.skip=true",
-            "-s " + projectPath + File.separator + SETTING_XML,
+            "-s " + targetFilePath,
             "-DaltDeploymentRepository=maven_remote::default::" + repository));
 
     Invoker ideaInvoker = new DefaultInvoker();
@@ -423,8 +424,9 @@ public class MavenGenerator {
       return false;
     }
     MavenXpp3Writer mavenXpp3Writer = new MavenXpp3Writer();
-    Writer writer = new FileWriter(pomPath);
-    mavenXpp3Writer.write(writer, model);
+    try(Writer writer = new FileWriter(pomPath)) {
+      mavenXpp3Writer.write(writer, model);
+    }
     return true;
   }
 

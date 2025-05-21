@@ -6,6 +6,7 @@ import com.zj.common.exception.ErrorCode;
 import com.zj.common.adapter.git.GitAccessInfo;
 import com.zj.common.adapter.git.IGitRepositoryHandler;
 import com.zj.common.adapter.uuid.UniqueIdService;
+import com.zj.common.utils.OrikaUtil;
 import com.zj.domain.entity.bo.demand.BugBO;
 import com.zj.domain.entity.bo.demand.DemandBO;
 import com.zj.domain.entity.bo.demand.WorkTaskBO;
@@ -18,6 +19,7 @@ import com.zj.domain.repository.demand.IWorkTaskRepository;
 import com.zj.domain.repository.pipeline.ICodeChangeRepository;
 import com.zj.domain.repository.service.IMicroServiceRepository;
 import com.zj.domain.entity.enums.RelationType;
+import com.zj.pipeline.entity.dto.CodeChangeDto;
 import com.zj.pipeline.git.RepositoryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -62,20 +64,22 @@ public class CodeChangeService {
         return codeChangeRepository.getCodeChange(codeChangeId);
     }
 
-    public String createCodeChange(CodeChangeBO codeChange) {
-        GitAccessInfo gitAccessInfo = repositoryFactory.getServiceRepositoryAccessInfo(codeChange.getServiceId());
+    public String createCodeChange(CodeChangeDto codeChangeDto) {
+        GitAccessInfo gitAccessInfo = repositoryFactory.getServiceRepositoryAccessInfo(codeChangeDto.getServiceId());
         IGitRepositoryHandler repository = repositoryFactory.getRepository(gitAccessInfo.getGitType());
-        repository.createBranch(codeChange.getChangeBranch(), gitAccessInfo);
-        codeChange.setChangeId(uniqueIdService.getUniqueId());
+        repository.createBranch(codeChangeDto.getChangeBranch(), gitAccessInfo);
+        codeChangeDto.setChangeId(uniqueIdService.getUniqueId());
+        CodeChangeBO codeChange = OrikaUtil.convert(codeChangeDto, CodeChangeBO.class);
         return codeChangeRepository.saveCodeChange(codeChange) ? codeChange.getChangeId() : "";
     }
 
-    public boolean updateCodeChange(String serviceId, String codeChangeId, CodeChangeBO codeChange) {
-        CodeChangeBO changeDto = getCodeChange(serviceId, codeChangeId);
-        if (Objects.isNull(changeDto)) {
+    public boolean updateCodeChange(String serviceId, String codeChangeId, CodeChangeDto codeChangeDto) {
+        CodeChangeBO codeChangeBO = getCodeChange(serviceId, codeChangeId);
+        if (Objects.isNull(codeChangeBO)) {
             throw new ApiException(ErrorCode.NOT_FOUND_CODE_CHANGE);
         }
 
+        CodeChangeBO codeChange = OrikaUtil.convert(codeChangeDto, CodeChangeBO.class);
         codeChange.setChangeId(codeChangeId);
         codeChange.setUpdateTime(System.currentTimeMillis());
         return codeChangeRepository.updateCodeChange(codeChange);

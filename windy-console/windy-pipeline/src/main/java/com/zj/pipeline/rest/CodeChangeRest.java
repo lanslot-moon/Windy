@@ -4,6 +4,7 @@ import com.zj.common.exception.ErrorCode;
 import com.zj.common.entity.dto.ResponseMeta;
 import com.zj.domain.entity.bo.pipeline.CodeChangeBO;
 import com.zj.domain.entity.bo.pipeline.RelationDemandBug;
+import com.zj.pipeline.entity.dto.CodeChangeDto;
 import com.zj.pipeline.service.CodeChangeService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,16 +51,16 @@ public class CodeChangeRest {
 
   @ResponseBody
   @PostMapping("/change")
-  public ResponseMeta<String> createCodeChange(@NotNull @Validated @RequestBody CodeChangeBO codeChangeBO) {
-    return new ResponseMeta<String>(ErrorCode.SUCCESS, codeChangeService.createCodeChange(codeChangeBO));
+  public ResponseMeta<String> createCodeChange(@NotNull @Validated @RequestBody CodeChangeDto codeChangeDto) {
+    return new ResponseMeta<String>(ErrorCode.SUCCESS, codeChangeService.createCodeChange(codeChangeDto));
   }
 
   @ResponseBody
   @PutMapping("/{serviceId}/change/{codeChangeId}")
   public ResponseMeta<Boolean> updateCodeChange(@NotNull @PathVariable("serviceId") String serviceId,
                                                 @NotNull @PathVariable("codeChangeId") String codeChangeId,
-                                                @NotNull @RequestBody CodeChangeBO codeChangeBO) {
-    return new ResponseMeta<Boolean>(ErrorCode.SUCCESS, codeChangeService.updateCodeChange(serviceId, codeChangeId, codeChangeBO));
+                                                @NotNull @RequestBody CodeChangeDto codeChangeDto) {
+    return new ResponseMeta<Boolean>(ErrorCode.SUCCESS, codeChangeService.updateCodeChange(serviceId, codeChangeId, codeChangeDto));
   }
 
   @ResponseBody

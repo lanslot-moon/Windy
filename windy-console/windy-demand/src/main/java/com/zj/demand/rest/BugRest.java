@@ -81,8 +81,9 @@ public class BugRest {
     @GetMapping("/user/bugs")
     public ResponseMeta<PageSize<BugBO>> getUserRelatedBugs(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                                             @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                            @RequestParam(value = "status", required = false) Integer status) {
-        return new ResponseMeta<>(ErrorCode.SUCCESS, bugService.getUserRelatedBugs(page, size, status));
+                                                            @RequestParam(value = "status", required = false) Integer status,
+                                                            @RequestParam(value = "name", required = false) String name) {
+        return new ResponseMeta<>(ErrorCode.SUCCESS, bugService.getUserRelatedBugs(page, size, status, name));
     }
 
 }

@@ -3,10 +3,10 @@ package com.zj.demand.rest;
 import com.zj.common.exception.ErrorCode;
 import com.zj.common.entity.dto.PageSize;
 import com.zj.common.entity.dto.ResponseMeta;
+import com.zj.demand.entity.BusinessDictionaryDto;
 import com.zj.demand.entity.DemandDetailDto;
 import com.zj.demand.entity.DemandDto;
 import com.zj.demand.service.DemandService;
-import com.zj.domain.entity.bo.demand.BusinessStatusBO;
 import com.zj.domain.entity.bo.demand.DemandBO;
 import com.zj.domain.entity.vo.Create;
 import com.zj.domain.entity.vo.Update;
@@ -64,18 +64,24 @@ public class DemandRest {
     @GetMapping("/user/demands")
     public ResponseMeta<PageSize<DemandBO>> getUserDemands(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                           @RequestParam(value = "status", required = false) Integer status) {
-        return new ResponseMeta<>(ErrorCode.SUCCESS, demandService.getUserDemands(page, size, status));
+                                                           @RequestParam(value = "status", required = false) Integer status,
+                                                           @RequestParam(value = "name", required = false) String name) {
+        return new ResponseMeta<>(ErrorCode.SUCCESS, demandService.getUserDemands(page, size, status, name));
     }
 
     @GetMapping("/demand/tags")
-    public ResponseMeta<List<BusinessStatusBO>> getDemandTags() {
+    public ResponseMeta<List<BusinessDictionaryDto>> getDemandTags() {
         return new ResponseMeta<>(ErrorCode.SUCCESS, demandService.getDemandTags());
     }
 
     @GetMapping("/demand/statuses")
-    public ResponseMeta<List<BusinessStatusBO>> getDemandStatuses() {
+    public ResponseMeta<List<BusinessDictionaryDto>> getDemandStatuses() {
         return new ResponseMeta<>(ErrorCode.SUCCESS, demandService.getDemandStatuses());
+    }
+
+    @GetMapping("/demand/customer/values")
+    public ResponseMeta<List<BusinessDictionaryDto>> getCustomerValues() {
+        return new ResponseMeta<>(ErrorCode.SUCCESS, demandService.getCustomerValues());
     }
 
     @GetMapping("/demands/{demandId}")

@@ -1,18 +1,11 @@
-package com.zj.domain.entity.bo.pipeline;
+package com.zj.pipeline.entity.dto;
 
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
-/**
- * @author guyuelan
- * @since 2021/10/15
- */
-
 @Data
-public class CodeChangeBO {
-
-    private Long id;
+public class CodeChangeDto {
 
     /**
      * 变更ID

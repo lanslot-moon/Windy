@@ -36,6 +36,11 @@ public class IBusinessStatusRepositoryImpl extends ServiceImpl<BusinessStatusMap
     }
 
     @Override
+    public List<BusinessStatusBO> getCustomerValues() {
+        return getStatusListByType(BusinessStatusType.DEMAND_VALUE);
+    }
+
+    @Override
     public List<BusinessStatusBO> getWorkTaskStatuses() {
         return getStatusListByType(BusinessStatusType.WORK);
     }

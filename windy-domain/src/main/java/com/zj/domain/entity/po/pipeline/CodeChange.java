@@ -49,6 +49,11 @@ public class CodeChange {
   private Integer relationType;
 
   /**
+   * 关联资源的名称，作为冗余字段
+   */
+  private String relationName;
+
+  /**
    * 创建时间
    * */
   private Long createTime;

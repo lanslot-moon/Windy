@@ -46,4 +46,10 @@ public interface IBusinessStatusRepository {
      * @return 是否不可更改
      */
     boolean isUnchangeableStatus(Integer status, String businessType);
+
+    /**
+     * 获取客户价值标签列表
+     * @return 返回标签字典列表
+     */
+    List<BusinessStatusBO> getCustomerValues();
 }

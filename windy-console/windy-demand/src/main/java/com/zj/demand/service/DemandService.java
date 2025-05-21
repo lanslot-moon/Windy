@@ -7,6 +7,7 @@ import com.zj.common.entity.dto.PageSize;
 import com.zj.common.exception.ApiException;
 import com.zj.common.exception.ErrorCode;
 import com.zj.common.utils.OrikaUtil;
+import com.zj.demand.entity.BusinessDictionaryDto;
 import com.zj.demand.entity.DemandDetailDto;
 import com.zj.demand.entity.DemandDto;
 import com.zj.domain.entity.bo.auth.UserBO;
@@ -19,7 +20,6 @@ import com.zj.domain.entity.enums.RelationType;
 import com.zj.domain.repository.auth.IUserRepository;
 import com.zj.domain.repository.demand.IBusinessStatusRepository;
 import com.zj.domain.repository.demand.IDemandRepository;
-import com.zj.domain.repository.demand.IterationRepository;
 import com.zj.domain.repository.pipeline.ICodeChangeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,10 +77,10 @@ public class DemandService {
         return demandRepository.getDemandPage(demandQueryBO);
     }
 
-    public PageSize<DemandBO> getUserDemands(Integer page, Integer size, Integer status) {
+    public PageSize<DemandBO> getUserDemands(Integer page, Integer size, Integer status, String name) {
         String currentUserId = authService.getCurrentUserId();
         DemandQueryBO demandQueryBO =
-                DemandQueryBO.builder().pageSize(size).page(page).status(status).acceptor(currentUserId).build();
+                DemandQueryBO.builder().pageSize(size).page(page).status(status).acceptor(currentUserId).name(name).build();
         return demandRepository.getDemandPage(demandQueryBO);
     }
 
@@ -126,16 +126,22 @@ public class DemandService {
         return demandRepository.deleteDemand(demandId);
     }
 
-    public List<BusinessStatusBO> getDemandStatuses() {
-        return businessStatusRepository.getDemandStatuses();
-    }
-
-
     public List<DemandBO> getIterationDemands(String iterationId) {
         return demandRepository.getIterationDemand(iterationId);
     }
 
-    public List<BusinessStatusBO> getDemandTags() {
-        return businessStatusRepository.getDemandTags();
+    public List<BusinessDictionaryDto> getDemandStatuses() {
+        List<BusinessStatusBO> demandStatuses = businessStatusRepository.getDemandStatuses();
+        return OrikaUtil.convertList(demandStatuses, BusinessDictionaryDto.class);
+    }
+
+    public List<BusinessDictionaryDto> getDemandTags() {
+        List<BusinessStatusBO> demandTags = businessStatusRepository.getDemandTags();
+        return OrikaUtil.convertList(demandTags, BusinessDictionaryDto.class);
+    }
+
+    public List<BusinessDictionaryDto> getCustomerValues() {
+        List<BusinessStatusBO> businessStatusList = businessStatusRepository.getCustomerValues();
+        return OrikaUtil.convertList(businessStatusList, BusinessDictionaryDto.class);
     }
 }

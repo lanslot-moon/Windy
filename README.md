@@ -94,5 +94,8 @@ http://主机IP:9768
 ![整体设计](./doc/images/design.png)
 
 ## 加群交流
-![QQ group](https://github.com/user-attachments/assets/fdd78f13-30dd-4753-969d-116bddd0e5a8)
+<img src="https://github.com/user-attachments/assets/fdd78f13-30dd-4753-969d-116bddd0e5a8" alt="QQ群" width="220px" />
+
+<img src="https://github.com/user-attachments/assets/f88e5f84-213e-4ae4-ba38-9d4683d8559f" alt="QQ群" width="220px" />
+
 

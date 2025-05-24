@@ -17,11 +17,7 @@ import com.zj.domain.entity.bo.service.ResourceMemberBO;
 import com.zj.domain.entity.enums.BusinessStatusType;
 import com.zj.domain.entity.enums.IterationStatus;
 import com.zj.domain.entity.enums.MemberType;
-import com.zj.domain.repository.demand.IBugRepository;
-import com.zj.domain.repository.demand.IBusinessStatusRepository;
-import com.zj.domain.repository.demand.IDemandRepository;
-import com.zj.domain.repository.demand.IMemberRepository;
-import com.zj.domain.repository.demand.IterationRepository;
+import com.zj.domain.repository.demand.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,11 +39,13 @@ public class IterationService {
     private final IAuthService authService;
     private final IMemberRepository memberRepository;
     private final IBusinessStatusRepository businessStatusRepository;
+    private final ICommentRepository commentRepository;
 
     public IterationService(IDemandRepository demandRepository, IBugRepository bugRepository,
                             IterationRepository iterationRepository,
                             UniqueIdService uniqueIdService, IAuthService authService,
-                            IMemberRepository memberRepository, IBusinessStatusRepository businessStatusRepository) {
+                            IMemberRepository memberRepository, IBusinessStatusRepository businessStatusRepository,
+                            ICommentRepository commentRepository) {
         this.demandRepository = demandRepository;
         this.bugRepository = bugRepository;
         this.iterationRepository = iterationRepository;
@@ -55,6 +53,7 @@ public class IterationService {
         this.authService = authService;
         this.memberRepository = memberRepository;
         this.businessStatusRepository = businessStatusRepository;
+        this.commentRepository = commentRepository;
     }
 
     public List<IterationBO> getSpaceIterationList(String spaceId) {
@@ -116,6 +115,9 @@ public class IterationService {
         boolean deleteIterationUsers = memberRepository.deleteResourceMemberByType(iterationId,
                 MemberType.ITERATION_MEMBER);
         log.info("delete iteration users result={}", deleteIterationUsers);
+
+        boolean deleteResult = commentRepository.deleteByRelativeId(iterationId);
+        log.info("delete iteration comments result={}", deleteResult);
         return iterationRepository.deleteIteration(iterationId);
     }
 

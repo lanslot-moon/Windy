@@ -67,7 +67,14 @@ public class ClientCollector {
         try {
             String command = exchangeCommand(type, installPath);
             ProcessBuilder processBuilder = new ProcessBuilder();
-            processBuilder.command("sh", "-c", command);
+
+            // 根据操作系统选择不同的命令解释器
+            if (isWindows()) {
+                processBuilder.command("cmd.exe", "/c", command);
+            } else {
+                processBuilder.command("sh", "-c", command);
+            }
+
             Process process = processBuilder.start();
 
             // 读取标准输出
@@ -94,16 +101,33 @@ public class ClientCollector {
     }
 
     private static String exchangeCommand(String type, String installPath) {
-        String command = installPath;
+        // 统一处理路径分隔符
+        String normalizedPath = installPath.replace("/", File.separator)
+                .replace("\\", File.separator);
+
+        StringBuilder command = new StringBuilder();
+
         if (Objects.equals(ToolType.JAVA.getType(), type)) {
-            command += "/bin/java -version";
+            command.append(normalizedPath)
+                    .append(File.separator).append("bin")
+                    .append(File.separator).append("java -version");
+        } else if (Objects.equals(ToolType.GO.getType(), type)) {
+            command.append(normalizedPath)
+                    .append(File.separator).append("bin")
+                    .append(File.separator).append("go version");
+        } else if (Objects.equals(ToolType.MAVEN.getType(), type)) {
+            command.append(normalizedPath)
+                    .append(File.separator).append("bin")
+                    .append(File.separator).append("mvn -v");
+        } else {
+            command.append(normalizedPath);
         }
-        if (Objects.equals(ToolType.GO.getType(), type)) {
-            command += "/bin/go version";
-        }
-        if (Objects.equals(ToolType.MAVEN.getType(), type)) {
-            command += "/bin/mvn -v";
-        }
-        return command;
+
+        return command.toString();
+    }
+
+    // 判断当前操作系统是否为Windows
+    private static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings>
+    <servers>
+        <server>
+            <id>maven_remote</id>
+            <username>windy-devops</username>
+            <password>zhijian137899</password>
+        </server>
+    </servers>
+</settings>

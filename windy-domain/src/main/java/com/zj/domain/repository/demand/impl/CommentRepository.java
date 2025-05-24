@@ -45,4 +45,9 @@ public class CommentRepository extends ServiceImpl<CommentMapper, Comment> imple
     public boolean deleteComment(String commentId) {
         return remove(Wrappers.lambdaQuery(Comment.class).eq(Comment::getCommentId, commentId));
     }
+
+    @Override
+    public boolean deleteByRelativeId(String relativeId) {
+        return remove(Wrappers.lambdaQuery(Comment.class).eq(Comment::getRelativeId, relativeId));
+    }
 }

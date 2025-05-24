@@ -32,4 +32,11 @@ public interface ICommentRepository {
      * @return 是否成功
      */
     boolean deleteComment(String commentId);
+
+    /**
+     *  根据关联资源ID删除所有评论
+     * @param relativeId 关联的资源ID
+     * @return 是否删除成功
+     */
+    boolean deleteByRelativeId(String relativeId);
 }

@@ -2,6 +2,7 @@ package com.zj.master.dispatch.generate;
 
 import com.zj.common.adapter.invoker.IClientInvoker;
 import com.zj.common.entity.dto.DispatchTaskModel;
+import com.zj.common.entity.pipeline.ServiceConfig;
 import com.zj.common.entity.service.ApiParamModel;
 import com.zj.common.enums.DispatchType;
 import com.zj.common.enums.LogType;
@@ -19,8 +20,10 @@ import com.zj.master.dispatch.IDispatchExecutor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -66,7 +69,10 @@ public class GenerateDispatcher implements IDispatchExecutor {
     generateParam.setMavenUser(mavenConfig.getUserName());
     generateParam.setMavenPwd(mavenConfig.getPassword());
     generateParam.setMavenRepository(mavenConfig.getMavenUrl());
-    List<ServiceApiBO> apiList = serviceApiRepository.getApiByService(serviceId);
+    generateParam.setServiceId(serviceId);
+
+    List<String> apiIdList = Arrays.asList(task.getTriggerId().split(","));
+    List<ServiceApiBO> apiList = serviceApiRepository.getServiceApiList(apiIdList);
     if (CollectionUtils.isEmpty(apiList)) {
       return false;
     }
@@ -76,11 +82,13 @@ public class GenerateDispatcher implements IDispatchExecutor {
       apiModel.setResponseParamList(OrikaUtil.convertList(api.getResponseParams(), ApiParamModel.class));
       return apiModel;
     }).collect(Collectors.toList());
+    generateParam.setApiList(models);
 
     MicroserviceBO service = serviceRepository.queryServiceDetail(serviceId);
+    ServiceConfig serviceConfig = service.getServiceConfig();
+    Optional.ofNullable(serviceConfig.getServiceContext()).ifPresent(context ->
+            generateParam.setBuildPath(context.getBuildVersion()));
     generateParam.setService(service.getServiceName());
-    generateParam.setServiceId(serviceId);
-    generateParam.setApiList(models);
     return clientInvoker.runGenerateTask(generateParam);
   }
 

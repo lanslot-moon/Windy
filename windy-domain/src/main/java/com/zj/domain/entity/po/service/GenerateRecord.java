@@ -34,6 +34,11 @@ public class GenerateRecord {
    */
   private String version;
 
+  /**
+   * 版本描述
+   */
+  private String description;
+
   private Long createTime;
 
   private Long updateTime;

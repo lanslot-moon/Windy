@@ -32,6 +32,11 @@ public class ServiceGenerateBO {
    */
   private String artifactId;
 
+  /**
+   * 版本描述
+   */
+  private String description;
+
   private Long createTime;
 
   private Long updateTime;

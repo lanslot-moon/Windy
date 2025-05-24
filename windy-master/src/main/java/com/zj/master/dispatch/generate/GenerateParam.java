@@ -52,5 +52,13 @@ public class GenerateParam extends BaseDispatch {
    * */
   private String mavenRepository;
 
+  /**
+   * 服务列表
+   */
   private List<ApiModel> apiList;
+
+  /**
+   * 构建工具路径
+   */
+  private String buildPath;
 }

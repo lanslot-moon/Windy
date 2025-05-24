@@ -1,7 +1,11 @@
 package com.zj.domain.repository.pipeline.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zj.common.entity.dto.PageSize;
 import com.zj.common.utils.OrikaUtil;
 import com.zj.domain.entity.bo.pipeline.CodeChangeBO;
 import com.zj.domain.entity.po.pipeline.CodeChange;
@@ -11,6 +15,7 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -51,6 +56,21 @@ public class CodeChangeRepository extends ServiceImpl<CodeChangeMapper, CodeChan
     List<CodeChange> codeChanges = list(
         Wrappers.lambdaQuery(CodeChange.class).eq(CodeChange::getServiceId, serviceId));
     return OrikaUtil.convertList(codeChanges, CodeChangeBO.class);
+  }
+
+  @Override
+  public PageSize<CodeChangeBO> getServiceChangesPage(String serviceId, Integer pageNo, Integer size, String name) {
+    IPage<CodeChange> pageObj = new Page<>(pageNo, size);
+    LambdaQueryWrapper<CodeChange> queryWrapper = Wrappers.lambdaQuery(CodeChange.class);
+    if (StringUtils.isNotBlank(name)) {
+      queryWrapper.like(CodeChange::getChangeName, name);
+    }
+    queryWrapper.orderByDesc(CodeChange::getCreateTime).eq(CodeChange::getServiceId, serviceId);
+    IPage<CodeChange> codeChangePage = page(pageObj, queryWrapper);
+    PageSize<CodeChangeBO> pageSize = new PageSize<>();
+    pageSize.setTotal(codeChangePage.getTotal());
+    pageSize.setData(OrikaUtil.convertList(codeChangePage.getRecords(), CodeChangeBO.class));
+    return pageSize;
   }
 
   @Override

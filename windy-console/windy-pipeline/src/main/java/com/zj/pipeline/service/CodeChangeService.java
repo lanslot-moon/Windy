@@ -1,6 +1,7 @@
 package com.zj.pipeline.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Assert;
+import com.zj.common.entity.dto.PageSize;
 import com.zj.common.exception.ApiException;
 import com.zj.common.exception.ErrorCode;
 import com.zj.common.adapter.git.GitAccessInfo;
@@ -27,7 +28,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -85,16 +85,20 @@ public class CodeChangeService {
         return codeChangeRepository.updateCodeChange(codeChange);
     }
 
-    public List<CodeChangeBO> listCodeChanges(String serviceId) {
+    public PageSize<CodeChangeBO> listCodeChanges(String serviceId, Integer page, Integer size, String name) {
         checkServiceExist(serviceId);
-        return codeChangeRepository.getServiceChanges(serviceId);
+        return codeChangeRepository.getServiceChangesPage(serviceId, page, size, name);
     }
 
     public Boolean deleteCodeChange(String serviceId, String codeChangeId) {
         CodeChangeBO codeChange = getCodeChange(serviceId, codeChangeId);
         GitAccessInfo gitAccessInfo = repositoryFactory.getServiceRepositoryAccessInfo(serviceId);
         IGitRepositoryHandler repository = repositoryFactory.getRepository(gitAccessInfo.getGitType());
-        repository.deleteBranch(codeChange.getChangeBranch(), gitAccessInfo);
+        List<String> branches = repository.listBranch(gitAccessInfo);
+        boolean branchExist = branches.stream().anyMatch(branchName -> Objects.equals(branchName, codeChange.getChangeBranch()));
+        if (branchExist){
+            repository.deleteBranch(codeChange.getChangeBranch(), gitAccessInfo);
+        }
         return codeChangeRepository.deleteCodeChange(codeChangeId);
     }
 

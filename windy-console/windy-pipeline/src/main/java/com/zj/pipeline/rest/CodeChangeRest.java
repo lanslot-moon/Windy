@@ -1,5 +1,6 @@
 package com.zj.pipeline.rest;
 
+import com.zj.common.entity.dto.PageSize;
 import com.zj.common.exception.ErrorCode;
 import com.zj.common.entity.dto.ResponseMeta;
 import com.zj.domain.entity.bo.pipeline.CodeChangeBO;
@@ -65,8 +66,11 @@ public class CodeChangeRest {
 
   @ResponseBody
   @GetMapping("/{serviceId}/changes")
-  public ResponseMeta<List<CodeChangeBO>> listCodeChanges(@NotNull @PathVariable("serviceId") String serviceId) {
-    return new ResponseMeta<List<CodeChangeBO>>(ErrorCode.SUCCESS, codeChangeService.listCodeChanges(serviceId));
+  public ResponseMeta<PageSize<CodeChangeBO>> listCodeChanges(@NotNull @PathVariable("serviceId") String serviceId,
+                                                              @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                              @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                              @RequestParam(value = "name", defaultValue = "") String name) {
+    return new ResponseMeta<PageSize<CodeChangeBO>>(ErrorCode.SUCCESS, codeChangeService.listCodeChanges(serviceId, page, size, name));
   }
 
   @ResponseBody

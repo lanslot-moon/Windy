@@ -1,5 +1,6 @@
 package com.zj.domain.repository.pipeline;
 
+import com.zj.common.entity.dto.PageSize;
 import com.zj.domain.entity.bo.pipeline.CodeChangeBO;
 import java.util.List;
 
@@ -32,10 +33,21 @@ public interface ICodeChangeRepository {
 
   /**
    * 获取服务代码变更
+   *
    * @param serviceId 服务ID
    * @return 代码变更列表
    */
   List<CodeChangeBO> getServiceChanges(String serviceId);
+
+  /**
+   * 分页获取服务的变更列表
+   * @param serviceId 服务ID
+   * @param page 分页号
+   * @param size 分页大小
+   * @param name 变更名称
+   * @return 变更分页列表
+   */
+  PageSize<CodeChangeBO> getServiceChangesPage(String serviceId, Integer page, Integer size , String name);
 
   /**
    * 删除代码变更

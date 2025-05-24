@@ -785,7 +785,7 @@ CREATE TABLE `microservice` (
 LOCK TABLES `microservice` WRITE;
 /*!40000 ALTER TABLE `microservice` DISABLE KEYS */;
 INSERT INTO `microservice` VALUES
-(1926134831662616578,'d738e2841bc041a38cab9d3179dd0434','https://github.com/languyue/windy-demo.git','windy-demo','测试服务',3,1748061304359,1748066101360,'{\"appName\":\"windy-demo\",\"envParams\":[{\"related\":false}],\"gitAccessInfo\":{\"accessToken\":\"\",\"gitDomain\":\"https://api.github.com\",\"gitServiceName\":\"windy-demo\",\"gitType\":\"Github\",\"gitUrl\":\"https://github.com/languyue/windy-demo.git\",\"owner\":\"languyue\"},\"nodeStrategy\":{\"type\":\"\",\"value\":\"\"},\"ports\":[{}],\"replicas\":1,\"serviceContext\":{\"buildVersion\":\"/opt/windy-client/maven\",\"code\":\"Java\",\"deployType\":2,\"mainBranch\":\"main\"},\"strategy\":{\"type\":\"\"},\"volumes\":[{}]}',NULL);
+(1926134831662616578,'d738e2841bc041a38cab9d3179dd0434','https://github.com/languyue/windy-demo.git','windy-demo','测试服务',3,1748061304359,1748066101360,'{\"appName\":\"windy-demo\",\"envParams\":[{\"related\":false}],\"gitAccessInfo\":{\"accessToken\":\"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\",\"gitDomain\":\"https://api.github.com\",\"gitServiceName\":\"windy-demo\",\"gitType\":\"Github\",\"gitUrl\":\"https://github.com/languyue/windy-demo.git\",\"owner\":\"languyue\"},\"nodeStrategy\":{\"type\":\"\",\"value\":\"\"},\"ports\":[{}],\"replicas\":1,\"serviceContext\":{\"buildVersion\":\"/opt/windy-client/maven\",\"code\":\"Java\",\"deployType\":2,\"mainBranch\":\"main\"},\"strategy\":{\"type\":\"\"},\"volumes\":[{}]}',NULL);
 /*!40000 ALTER TABLE `microservice` ENABLE KEYS */;
 UNLOCK TABLES;
 

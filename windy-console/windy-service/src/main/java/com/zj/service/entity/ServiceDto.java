@@ -1,7 +1,10 @@
 package com.zj.service.entity;
 
 import com.zj.common.entity.pipeline.ServiceConfig;
+import com.zj.domain.entity.vo.Create;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 public class ServiceDto {
@@ -36,6 +39,7 @@ public class ServiceDto {
     /**
      * 服务部署容器配置
      */
+    @NotNull(groups = Create.class)
     private ServiceConfig serviceConfig;
 
     /**

@@ -74,8 +74,8 @@ public class ServiceApiRest {
   }
 
   @PostMapping("/service/resources/generate")
-  public ResponseMeta<Boolean> generateServiceApi(@RequestBody GenerateParams generateParams) {
-    return new ResponseMeta<>(ErrorCode.SUCCESS, apiService.generateServiceApi(generateParams));
+  public ResponseMeta<Boolean> generateServiceApi(@RequestBody GeneratePackageDto generatePackageDto) {
+    return new ResponseMeta<>(ErrorCode.SUCCESS, apiService.generateServiceApi(generatePackageDto));
   }
 
   @GetMapping("/service/{serviceId}/generate")

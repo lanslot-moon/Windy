@@ -113,7 +113,7 @@ public class ApiService {
         return apiRepository.batchDeleteApi(apiIds);
     }
 
-    public Boolean generateServiceApi(GenerateParams generate) {
+    public Boolean generateServiceApi(GeneratePackageDto generate) {
         checkMavenConfig();
         checkVersionExist(generate.getServiceId(), generate.getVersion());
         checkGenerateClassName(generate);
@@ -131,7 +131,7 @@ public class ApiService {
     /**
      * 检查构建的API是否都已经定义好类型和方法名
      */
-    private void checkGenerateClassName(GenerateParams generate) {
+    private void checkGenerateClassName(GeneratePackageDto generate) {
         List<ServiceApiBO> serviceApiList = apiRepository.getServiceApiList(generate.getApiIds())
                 .stream().filter(ServiceApiBO::isApi).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(serviceApiList)) {
@@ -203,17 +203,17 @@ public class ApiService {
         }
     }
 
-    private void saveOrUpdateParams(GenerateParams generateParams) {
-        ServiceGenerateBO serviceGenerateBO = generateRepository.getByService(generateParams.getServiceId());
+    private void saveOrUpdateParams(GeneratePackageDto generatePackageDto) {
+        ServiceGenerateBO serviceGenerateBO = generateRepository.getByService(generatePackageDto.getServiceId());
         if (Objects.isNull(serviceGenerateBO)) {
-            ServiceGenerateBO generateBO = OrikaUtil.convert(generateParams, ServiceGenerateBO.class);
+            ServiceGenerateBO generateBO = OrikaUtil.convert(generatePackageDto, ServiceGenerateBO.class);
             generateBO.setGenerateId(uniqueIdService.getUniqueId());
             generateRepository.create(generateBO);
         } else {
-            serviceGenerateBO.setArtifactId(generateParams.getArtifactId());
-            serviceGenerateBO.setVersion(generateParams.getVersion());
-            serviceGenerateBO.setGroupId(generateParams.getGroupId());
-            serviceGenerateBO.setPackageName(generateParams.getPackageName());
+            serviceGenerateBO.setArtifactId(generatePackageDto.getArtifactId());
+            serviceGenerateBO.setVersion(generatePackageDto.getVersion());
+            serviceGenerateBO.setGroupId(generatePackageDto.getGroupId());
+            serviceGenerateBO.setPackageName(generatePackageDto.getPackageName());
             generateRepository.update(serviceGenerateBO);
         }
     }
@@ -253,10 +253,12 @@ public class ApiService {
         }
 
         List<String> templateIds = serviceApis.stream().map(ServiceApiBO::getApiId).collect(Collectors.toList());
-        List<String> existTemplateIds =
-                executeTemplateRepository.getTemplateByIds(templateIds).stream().map(ExecuteTemplateBO::getTemplateId).collect(Collectors.toList());
-
-        return serviceApis.stream().filter(serviceApi -> generateTemplate.getCover() || !existTemplateIds.contains(serviceApi.getApiId())).map(serviceApi -> convertApi2Template(serviceApi, generateTemplate.getInvokeType(), generateTemplate.getRelatedId())).filter(Objects::nonNull).collect(Collectors.toList());
+        List<String> existTemplateIds = executeTemplateRepository.getTemplateByIds(templateIds)
+                .stream().map(ExecuteTemplateBO::getTemplateId).collect(Collectors.toList());
+        return serviceApis.stream()
+                .filter(serviceApi -> generateTemplate.getCover() || !existTemplateIds.contains(serviceApi.getApiId()))
+                .map(serviceApi -> convertApi2Template(serviceApi, generateTemplate.getInvokeType(), generateTemplate.getRelatedId()))
+                .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private ExecuteTemplateDto convertApi2Template(ServiceApiBO serviceApi, Integer invokeType, String relatedId) {
@@ -273,6 +275,9 @@ public class ApiService {
         executeTemplateBO.setDescription(serviceApi.getDescription());
         executeTemplateBO.setOwner(serviceApi.getServiceId());
         executeTemplateBO.setRelatedId(relatedId);
+        if (StringUtils.isBlank(serviceApi.getDescription())){
+            executeTemplateBO.setDescription(serviceApi.getApiName());
+        }
 
         List<ApiRequestVariable> apiVariables = OrikaUtil.convertList(serviceApi.getRequestParams(),
                 ApiRequestVariable.class);

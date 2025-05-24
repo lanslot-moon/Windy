@@ -45,6 +45,7 @@ public class FeatureTemplateRest {
         PageSize<ExecuteTemplateDto> featureConfigs = templateService.getTemplatePage(serviceId, page, size, name);
         return new ResponseMeta<>(ErrorCode.SUCCESS, featureConfigs);
     }
+
     @ResponseBody
     @GetMapping("/templates")
     public ResponseMeta<List<ExecuteTemplateDto>> getAllTemplates() {

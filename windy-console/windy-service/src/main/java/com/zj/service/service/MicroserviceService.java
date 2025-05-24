@@ -146,7 +146,13 @@ public class MicroserviceService {
         }
 
         GitAccessInfo gitAccessInfo =
-                Optional.ofNullable(serviceDto.getServiceConfig()).map(ServiceConfig::getGitAccessInfo).filter(access -> StringUtils.isNotBlank(access.getAccessToken())).orElseGet(systemConfig::getGitAccess);
+                Optional.ofNullable(serviceDto.getServiceConfig()).map(ServiceConfig::getGitAccessInfo)
+                        .filter(access -> StringUtils.isNotBlank(access.getAccessToken()))
+                        .orElseGet(systemConfig::getGitAccess);
+        if (StringUtils.isBlank(gitAccessInfo.getGitDomain())|| StringUtils.isBlank(gitAccessInfo.getAccessToken())) {
+            log.info("can not find git config, pls check");
+            throw new ApiException(ErrorCode.NOT_FIND_REPO_CONFIG);
+        }
         gitAccessInfo.setGitUrl(serviceDto.getGitUrl());
         repositoryBranch.checkRepository(gitAccessInfo);
 
@@ -158,10 +164,11 @@ public class MicroserviceService {
     }
 
     private String chooseGitType(ServiceDto serviceDto) {
-        if (Objects.isNull(serviceDto.getServiceConfig()) || Objects.isNull(serviceDto.getServiceConfig().getGitAccessInfo()) || StringUtils.isBlank(serviceDto.getServiceConfig().getGitAccessInfo().getAccessToken())) {
+        ServiceConfig serviceConfig = serviceDto.getServiceConfig();
+        if ( Objects.isNull(serviceConfig.getGitAccessInfo())) {
             return systemConfig.getGitAccess().getGitType();
         }
-        return serviceDto.getServiceConfig().getGitAccessInfo().getGitType();
+        return serviceConfig.getGitAccessInfo().getGitType();
     }
 
     public String updateService(ServiceDto update) {

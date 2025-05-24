@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class GenerateParams {
+public class GeneratePackageDto {
 
     /**
      * 需要生成二方包的API列表
@@ -36,4 +36,9 @@ public class GenerateParams {
      * jar包artifactId
      */
     private String artifactId;
+
+    /**
+     * 构建版本描述
+     */
+    private String description;
 }

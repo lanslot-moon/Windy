@@ -91,7 +91,7 @@ public class MicroserviceRest {
 
     @ResponseBody
     @PostMapping("/services")
-    public ResponseMeta<String> createService(@RequestBody ServiceDto serviceDto) {
+    public ResponseMeta<String> createService(@Validated(Create.class) @RequestBody ServiceDto serviceDto) {
         return new ResponseMeta<String>(ErrorCode.SUCCESS, microservice.createService(serviceDto));
     }
 

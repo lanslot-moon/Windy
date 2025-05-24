@@ -3,12 +3,15 @@ package com.zj.common.adapter.git;
 import com.zj.common.utils.GitUtils;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 public class GitAccessInfo {
 
     /**
      * 访问Git的API域名
      */
+    @NotBlank
     private String gitDomain;
 
     /**
@@ -19,6 +22,7 @@ public class GitAccessInfo {
     /**
      * 服务的拥有者(github、gitea需要)
      */
+    @NotBlank
     private String owner;
 
     /**

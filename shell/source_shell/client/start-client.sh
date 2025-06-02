@@ -2,7 +2,7 @@
 
 MAVEN_PATH=$1
 EUREKA_ZONE=$2
-SCRIPT_DIR=$(cd -P "$(dirname "$SOURCE")" && pwd)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 find_jar_file() {
   local DIR=$1
@@ -18,24 +18,23 @@ find_jar_file() {
 # 获取JDK主版本号
 get_java_version() {
   local version
-  version=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+  version=$(java -version 2>&1 | awk -F '"' '/version/{print $2}')
   if [[ "$version" == "1."* ]]; then
-    # JDK 8及以下版本格式为1.x.x
     echo "$version" | awk -F '.' '{print $2}'
   else
-    # JDK 9及以上版本格式为x.x.x
     echo "$version" | awk -F '.' '{print $1}'
   fi
 }
 
 mkdir -p "$SCRIPT_DIR/client_log"
 
-WINDY_CLIENT_JAR=$(find_jar_file "$SCRIPT_DIR/client" 'windy-client*.jar')
+WINDY_CLIENT_JAR=$(find_jar_file "$SCRIPT_DIR" 'windy-client*.jar')
 echo "启动 client..."
 
-JAVA_OPTS="-Dwindy.pipeline.maven.path=\"$MAVEN_PATH\" -DEUREKA_ZONE=\"$EUREKA_ZONE\""
-if (( $(get_java_major_version) >= 9 )); then
+JAVA_OPTS="-Dwindy.pipeline.maven.path=$MAVEN_PATH -DEUREKA_ZONE=$EUREKA_ZONE"
+if (( $(get_java_version) >= 9 )); then
   JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED $JAVA_OPTS"
 fi
 
+cd "$SCRIPT_DIR"
 nohup java $JAVA_OPTS -jar "$WINDY_CLIENT_JAR" > "$SCRIPT_DIR/client_log/client.log" 2>&1 &

@@ -87,6 +87,7 @@ public class PublishEndListener implements IPipelineEndListener {
             log.info("delete code change result = {} delete publish result={}", batchDeleteCodeChange,
                     deletePublishLine);
         }
+        // 触发代码发布成功通知
     }
 
     /**

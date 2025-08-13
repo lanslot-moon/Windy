@@ -51,13 +51,14 @@ public final class SpiFactory {
             }
 
             ServiceLoader<T> load = ServiceLoader.load(sourceClass);
-            T firstLoader = load.iterator().next();
-            if (firstLoader == null) {
+            Iterator<T> iterator = load.iterator();
+            if (!iterator.hasNext()) {
                 return defaultClass;
             }
 
-            cache.put(sourceClass, firstLoader);
-            return firstLoader;
+            T loadClass = iterator.next();
+            cache.put(sourceClass, loadClass);
+            return loadClass;
         }
     }
 }

@@ -7,6 +7,7 @@ import com.zj.notify.entity.bean.MessageSendConfig;
 import com.zj.notify.starter.IMessageConfigManager;
 import com.zj.notify.starter.IMessageConfigRegister;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@ConditionalOnMissingBean(IMessageConfigRegister.class)
+//@ConditionalOnMissingBean(IMessageConfigRegister.class)
 public class DefaultMessageConfigRegister implements IMessageConfigRegister, InitializingBean {
 
     private final IMessageConfigManager messageConfigManager;
@@ -35,7 +36,7 @@ public class DefaultMessageConfigRegister implements IMessageConfigRegister, Ini
     @Override
     public void messageChannelRegister() {
         NotifyConfigDto notifyConfig = systemConfigRepository.getNotifyConfig();
-        if (notifyConfig == null) {
+        if (notifyConfig == null || StringUtils.isBlank(notifyConfig.getPlatform())) {
             return;
         }
         MessageSendConfig sendConfig = OrikaUtil.convert(notifyConfig, MessageSendConfig.class);

@@ -30,11 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WeChatMessageProvider implements IMessageProvider {
 
-    private final RestTemplate restTemplate;
-
-    public WeChatMessageProvider(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public String futureName() {

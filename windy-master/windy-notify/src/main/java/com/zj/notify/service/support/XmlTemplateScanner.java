@@ -30,7 +30,7 @@ import java.util.*;
  */
 @Slf4j
 @Component
-@ConditionalOnMissingBean(ITemplateScanner.class)
+//@ConditionalOnMissingBean(ITemplateScanner.class)
 public class XmlTemplateScanner implements ITemplateScanner, InitializingBean {
 
 
@@ -104,16 +104,15 @@ public class XmlTemplateScanner implements ITemplateScanner, InitializingBean {
             MessageTemplateModelNode.TemplateNode.ContentConfigNode success = templateNode.getSuccess();
             MessageTemplateModelNode.TemplateNode.ContentConfigNode error = templateNode.getError();
             if (success != null) {
-                MessageTemplatePayload templatePayload = new MessageTemplatePayload(success.getTemplate(), success.getType());
+                MessageTemplatePayload templatePayload = new MessageTemplatePayload(success.getType(), success.getTemplate());
                 messageTemplateManager.registerTemplate(templateId, ContentNodeEnum.SUCCESS.getNodeName(), templatePayload);
             }
             if (error != null) {
-                MessageTemplatePayload templatePayload = new MessageTemplatePayload(error.getTemplate(), error.getType());
+                MessageTemplatePayload templatePayload = new MessageTemplatePayload(error.getType(), error.getTemplate());
                 messageTemplateManager.registerTemplate(templateId, ContentNodeEnum.ERROR.getNodeName(), templatePayload);
             }
         });
     }
-
 
 
     @Override

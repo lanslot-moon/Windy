@@ -9,16 +9,15 @@ import com.zj.notify.service.impl.MessageSendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 @Slf4j
 @RestController
 @RequestMapping("/v1/devops/notify")
 public class MessageNotifyRest {
 
-    private final MessageSendService messageSendService;
-
-    public MessageNotifyRest(MessageSendService messageSendService) {
-        this.messageSendService = messageSendService;
-    }
+    @Resource
+    private MessageSendService messageSendService;
 
     @PostMapping("/message")
     public ResponseMeta<Boolean> sendMessage(@RequestBody String msgContent) {

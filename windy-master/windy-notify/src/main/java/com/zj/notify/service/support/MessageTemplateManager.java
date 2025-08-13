@@ -11,7 +11,7 @@ import java.util.*;
 
 @Slf4j
 @Component
-@ConditionalOnMissingBean(IMessageTemplateManager.class)
+//@ConditionalOnMissingBean(IMessageTemplateManager.class)
 public class MessageTemplateManager implements IMessageTemplateManager {
 
     private final Map<String, MessageTemplatePayload> templatePayloadMap = new HashMap<>();

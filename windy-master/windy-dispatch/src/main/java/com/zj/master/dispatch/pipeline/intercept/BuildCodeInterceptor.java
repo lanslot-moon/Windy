@@ -2,7 +2,6 @@ package com.zj.master.dispatch.pipeline.intercept;
 
 import com.zj.common.entity.pipeline.PipelineConfig;
 import com.zj.common.entity.pipeline.ServiceConfig;
-import com.zj.common.entity.pipeline.ServiceContext;
 import com.zj.common.enums.ExecuteType;
 import com.zj.common.exception.ApiException;
 import com.zj.common.exception.ErrorCode;

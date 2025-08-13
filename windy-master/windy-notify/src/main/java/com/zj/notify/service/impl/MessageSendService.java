@@ -13,9 +13,10 @@ import com.zj.notify.starter.IMessageConfigManager;
 import com.zj.notify.starter.IMessageProvider;
 import com.zj.notify.starter.IMessageTemplateParse;
 import com.zj.notify.starter.IMessageTemplateManager;
-import com.zj.notify.utils.SpiFactory;
+import com.zj.notify.utils.HybridFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -23,17 +24,23 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@DependsOn(value = {"hybridFactory"})
 public class MessageSendService implements IMessageSendService {
 
     /**
      * 默认解析器,优先从SPI中获取
      */
-    private final IMessageTemplateParse messageTemplateParse = SpiFactory.get(IMessageTemplateParse.class, new XmlTemplateTemplateParse());
+    private final IMessageTemplateParse messageTemplateParse;
 
-    private final IMessageTemplateManager messageTemplateManager = SpiFactory.get(IMessageTemplateManager.class, new MessageTemplateManager());
+    private final IMessageTemplateManager messageTemplateManager;
 
-    private final IMessageConfigManager messageConfigManager = SpiFactory.get(IMessageConfigManager.class, new DefaultMessageConfigManager());
+    private final IMessageConfigManager messageConfigManager;
 
+    public MessageSendService() {
+        messageTemplateParse = HybridFactory.get(IMessageTemplateParse.class, new XmlTemplateTemplateParse());
+        messageTemplateManager = HybridFactory.get(IMessageTemplateManager.class, new MessageTemplateManager());
+        messageConfigManager = HybridFactory.get(IMessageConfigManager.class, new DefaultMessageConfigManager());
+    }
 
     @Override
     public boolean sendMessageFromTemplate(String templateId, boolean methodInvokeResult, String contextParams) {
@@ -58,6 +65,12 @@ public class MessageSendService implements IMessageSendService {
 
         // choose message provider and get default message platform
         String defaultPlatform = defaultSendConfig.getPlatform();
+        Optional<IMessageProvider> messageFuture = Optional.ofNullable(MessageProviderFactory.getMessageFuture(defaultPlatform));
+        if (!messageFuture.isPresent()) {
+            log.warn("MessageSendService sendMessageFromTemplate there is no corresponding message provider......");
+            return false;
+        }
+
         MessageSendConfig messageSendConfig = messageConfigManager.getMessageSendConfig(templateId, defaultPlatform);
         if (messageSendConfig == null) {
             log.warn("MessageSendService sendMessageFromTemplate messageSendConfig is null......");
@@ -67,15 +80,12 @@ public class MessageSendService implements IMessageSendService {
         // parse source template content
         Map<String, Object> templateParams = JSON.parseObject(contextParams, new TypeReference<Map<String, Object>>() {});
         String renderContent = messageTemplateParse.parse(templateContentPayload.getTemplateContent(), templateParams);
-        MessageContentModel contentModel = new MessageContentModel(renderContent, templateContentPayload.getTemplateType(), null);
-
-        // get  message provider
-        Optional<IMessageProvider> messageFuture = Optional.ofNullable(MessageProviderFactory.getMessageFuture(defaultPlatform));
-        if (!messageFuture.isPresent()) {
-            log.warn("MessageSendService sendMessageFromTemplate there is no corresponding message provider......");
+        if (StringUtils.isBlank(renderContent)) {
+            log.warn("MessageSendService sendMessageFromTemplate renderContent is empty, params:{}", JSON.toJSONString(templateContentPayload));
             return false;
         }
 
+        MessageContentModel contentModel = new MessageContentModel(renderContent, templateContentPayload.getTemplateType(), null);
         MessageResp messageResp = messageFuture.get().sendMessage(messageSendConfig, contentModel, null);
         log.info("MessageSendService sendMessageFromTemplate result:{}", JSON.toJSONString(messageResp));
         return true;
@@ -84,6 +94,11 @@ public class MessageSendService implements IMessageSendService {
     @Override
     public boolean sendMessage(String content) {
         MessagePlatformConfig messagePlatformSendConfig = messageConfigManager.getDefaultSendConfig();
+        if (messagePlatformSendConfig == null) {
+            log.warn("MessageSendService sendMessage messagePlatformSendConfig is null......");
+            return false;
+        }
+
         IMessageProvider messageFuture = MessageProviderFactory.getMessageFuture(messagePlatformSendConfig.getPlatform());
         if (messageFuture == null) {
             log.warn("MessageSendService sendMessage there is no corresponding message provider......");

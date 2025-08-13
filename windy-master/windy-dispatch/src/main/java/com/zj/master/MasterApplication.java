@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @EnableScheduling
 @MapperScan("com.zj.domain.mapper.*")
-@SpringBootApplication(scanBasePackages = {"com.zj.master", "com.zj.common", "com.zj.domain"})
+@SpringBootApplication(scanBasePackages = {"com.zj.master", "com.zj.common", "com.zj.domain", "com.zj.notify"})
 @EnableEurekaServer
 public class MasterApplication {
 

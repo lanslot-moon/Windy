@@ -4,6 +4,7 @@ package com.zj.notify.service.support;
 import com.zj.notify.starter.IMessageTemplateParse;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,13 +22,18 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-@ConditionalOnMissingBean(IMessageTemplateParse.class)
+//@ConditionalOnMissingBean(IMessageTemplateParse.class)
 public class XmlTemplateTemplateParse implements IMessageTemplateParse {
 
-    private final Configuration freemarkerConfig = new Configuration(Configuration.VERSION_2_3_30);
-
+    private static final Configuration freemarkerConfig;
 
     private final Map<String, Template> templateCache = new HashMap<>();
+
+    static {
+        freemarkerConfig = new Configuration(Configuration.VERSION_2_3_30);
+        freemarkerConfig.setDefaultEncoding("UTF-8");
+        freemarkerConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+    }
 
 
     @Override

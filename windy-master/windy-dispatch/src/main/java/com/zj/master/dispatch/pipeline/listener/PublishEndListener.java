@@ -19,6 +19,7 @@ import com.zj.domain.repository.pipeline.ICodeChangeRepository;
 import com.zj.domain.repository.pipeline.IPipelineRepository;
 import com.zj.domain.repository.pipeline.IPublishBindRepository;
 import com.zj.master.entity.vo.NodeStatusChange;
+import com.zj.notify.service.IMessageSendService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -43,17 +44,19 @@ public class PublishEndListener implements IPipelineEndListener {
     private final IDemandRepository demandRepository;
     private final IBugRepository bugRepository;
     private final IWorkTaskRepository workTaskRepository;
+    private final IMessageSendService messageSendService;
 
 
     public PublishEndListener(IPublishBindRepository publishBindRepository, IPipelineRepository pipelineRepository,
                               ICodeChangeRepository codeChangeRepository, IDemandRepository demandRepository,
-                              IBugRepository bugRepository, IWorkTaskRepository workTaskRepository) {
+                              IBugRepository bugRepository, IWorkTaskRepository workTaskRepository, IMessageSendService messageSendService) {
         this.publishBindRepository = publishBindRepository;
         this.pipelineRepository = pipelineRepository;
         this.codeChangeRepository = codeChangeRepository;
         this.demandRepository = demandRepository;
         this.bugRepository = bugRepository;
         this.workTaskRepository = workTaskRepository;
+        this.messageSendService = messageSendService;
     }
 
     @Override
@@ -86,8 +89,12 @@ public class PublishEndListener implements IPipelineEndListener {
             boolean deletePublishLine = publishBindRepository.deleteServicePublishes(pipeline.getServiceId());
             log.info("delete code change result = {} delete publish result={}", batchDeleteCodeChange,
                     deletePublishLine);
+
+            messageSendService.sendMessageFromTemplate(this.getClass().getName(), true, JSON.toJSONString(pipeline));
+            return;
         }
-        // 触发代码发布成功通知
+        // 触发代码发布通知
+        messageSendService.sendMessage(JSON.toJSONString(pipeline));
     }
 
     /**

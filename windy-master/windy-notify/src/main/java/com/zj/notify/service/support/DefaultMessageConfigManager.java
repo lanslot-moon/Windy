@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-@ConditionalOnMissingBean(IMessageConfigManager.class)
+//@ConditionalOnMissingBean(IMessageConfigManager.class)
 public class DefaultMessageConfigManager implements IMessageConfigManager {
 
 
@@ -48,9 +48,6 @@ public class DefaultMessageConfigManager implements IMessageConfigManager {
     public void registerMessageSendConfig(String templateId, String channelTag, MessageSendConfig messageSendConfig) {
         String configKey = templateId + "@" + channelTag;
         methodNotifyConfig.put(configKey, messageSendConfig);
-
-        if (!globalNotifyConfig.containsKey(channelTag)) {
-            globalNotifyConfig.put(channelTag, messageSendConfig);
-        }
+        globalNotifyConfig.putIfAbsent(channelTag, messageSendConfig);
     }
 }

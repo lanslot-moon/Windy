@@ -9,7 +9,6 @@ import com.zj.notify.starter.IMessageConfigRegister;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-//@ConditionalOnMissingBean(IMessageConfigRegister.class)
 public class DefaultMessageConfigRegister implements IMessageConfigRegister, InitializingBean {
 
     private final IMessageConfigManager messageConfigManager;

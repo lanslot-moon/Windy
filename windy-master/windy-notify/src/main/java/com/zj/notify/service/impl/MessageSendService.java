@@ -13,7 +13,7 @@ import com.zj.notify.starter.IMessageConfigManager;
 import com.zj.notify.starter.IMessageProvider;
 import com.zj.notify.starter.IMessageTemplateParse;
 import com.zj.notify.starter.IMessageTemplateManager;
-import com.zj.notify.utils.HybridFactory;
+import com.zj.notify.utils.SpringSpiFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.DependsOn;
@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@DependsOn(value = {"hybridFactory"})
+@DependsOn(value = {"springSpiFactory"})
 public class MessageSendService implements IMessageSendService {
 
     /**
@@ -37,9 +37,9 @@ public class MessageSendService implements IMessageSendService {
     private final IMessageConfigManager messageConfigManager;
 
     public MessageSendService() {
-        messageTemplateParse = HybridFactory.get(IMessageTemplateParse.class, new XmlTemplateTemplateParse());
-        messageTemplateManager = HybridFactory.get(IMessageTemplateManager.class, new MessageTemplateManager());
-        messageConfigManager = HybridFactory.get(IMessageConfigManager.class, new DefaultMessageConfigManager());
+        messageTemplateParse = SpringSpiFactory.load(IMessageTemplateParse.class, new XmlTemplateTemplateParse());
+        messageTemplateManager = SpringSpiFactory.load(IMessageTemplateManager.class, new MessageTemplateManager());
+        messageConfigManager = SpringSpiFactory.load(IMessageConfigManager.class, new DefaultMessageConfigManager());
     }
 
     @Override

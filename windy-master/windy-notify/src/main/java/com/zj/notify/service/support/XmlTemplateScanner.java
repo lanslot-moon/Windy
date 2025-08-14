@@ -11,7 +11,6 @@ import com.zj.notify.starter.ITemplateScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,6 @@ import java.util.*;
  */
 @Slf4j
 @Component
-//@ConditionalOnMissingBean(ITemplateScanner.class)
 public class XmlTemplateScanner implements ITemplateScanner, InitializingBean {
 
 

@@ -4,7 +4,6 @@ import com.zj.notify.entity.bean.MessagePlatformConfig;
 import com.zj.notify.entity.bean.MessageSendConfig;
 import com.zj.notify.starter.IMessageConfigManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -13,7 +12,6 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-//@ConditionalOnMissingBean(IMessageConfigManager.class)
 public class DefaultMessageConfigManager implements IMessageConfigManager {
 
 

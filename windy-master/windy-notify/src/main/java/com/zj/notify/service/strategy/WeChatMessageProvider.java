@@ -3,12 +3,14 @@ package com.zj.notify.service.strategy;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
+import com.zj.common.utils.OkHttpUtil;
 import com.zj.notify.starter.IMessageProvider;
 import com.zj.notify.entity.bean.*;
 import com.zj.notify.entity.enums.MessageChannelEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -29,8 +32,6 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class WeChatMessageProvider implements IMessageProvider {
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public String futureName() {
@@ -48,13 +49,8 @@ public class WeChatMessageProvider implements IMessageProvider {
                 .build(messageContent.getMessageContent(), messageReceiveConfig);
 
         String webhookUrl = messageSendConfig.getWebhook();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON); // 关键设置
-        headers.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-
         try {
-            HttpEntity<String> entity = new HttpEntity<>(messagePayload.build(), headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(webhookUrl, entity, String.class);
+            OkHttpUtil.HttpResponse response = OkHttpUtil.doPostWithResponse(webhookUrl, messagePayload.build());
             return handleMessageSendResult(response);
         } catch (RestClientException e) {
             log.error("WeChatMessageProvider sendMessage error:", e);
@@ -74,8 +70,8 @@ public class WeChatMessageProvider implements IMessageProvider {
     }
 
 
-    private MessageResp handleMessageSendResult(ResponseEntity<String> response) {
-        if (Objects.equals(response.getStatusCode(), HttpStatus.OK)) {
+    private MessageResp handleMessageSendResult(OkHttpUtil.HttpResponse response) {
+        if (Objects.equals(response.getStatusCode(), HttpStatus.OK.value())) {
             return MessageResp.success(response.getBody());
         }
         return MessageResp.fail(response.getBody());

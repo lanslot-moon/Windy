@@ -4,14 +4,12 @@ import com.zj.notify.entity.bean.MessageTemplatePayload;
 import com.zj.notify.starter.IMessageTemplateManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Slf4j
 @Component
-//@ConditionalOnMissingBean(IMessageTemplateManager.class)
 public class MessageTemplateManager implements IMessageTemplateManager {
 
     private final Map<String, MessageTemplatePayload> templatePayloadMap = new HashMap<>();

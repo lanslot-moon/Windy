@@ -49,28 +49,4 @@
             </channel>
         </channels>
     </template>
-
-    <!-- 支持的消息类型示例 -->
-    <message-types>
-        <type name="text" desc="文本消息">
-            <template><![CDATA[${content}]]></template>
-        </type>
-        <type name="markdown" desc="Markdown消息">
-            <template><![CDATA[${markdownContent}]]></template>
-        </type>
-        <type name="image" desc="图片消息">
-            <field name="base64" required="true"/>
-            <field name="md5" required="true"/>
-        </type>
-        <type name="news" desc="图文消息">
-            <field name="articles" type="list">
-                <item>
-                    <field name="title" required="true"/>
-                    <field name="url" required="true"/>
-                    <field name="description"/>
-                    <field name="picurl"/>
-                </item>
-            </field>
-        </type>
-    </message-types>
 </templates>

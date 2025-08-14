@@ -7,7 +7,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,7 +21,6 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-//@ConditionalOnMissingBean(IMessageTemplateParse.class)
 public class XmlTemplateTemplateParse implements IMessageTemplateParse {
 
     private static final Configuration freemarkerConfig;

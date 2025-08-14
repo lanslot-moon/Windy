@@ -43,7 +43,7 @@
         <channels>
             <!-- 钉钉配置 -->
             <channel type="we_chat">
-                <webhook>https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=ea97d9c1-305d-4507-87b7-0fffdabdce37</webhook>
+                <webhook>https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=ea97d9c1-305d-4507-87b7-0fffdabdce</webhook>
                 <timeout>5000</timeout>
                 <retry>3</retry>
             </channel>
